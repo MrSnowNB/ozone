@@ -56,61 +56,7 @@ class TestResult:
     concurrency_level: int
     run_index: int
 
-class HardwareMonitor:
-    """Monitor system resources during tests"""
-
-    def __init__(self):
-        self.gpu_type = self._detect_gpu()
-
-    def _detect_gpu(self) -> str:
-        """Detect GPU type (AMD/NVIDIA/None)"""
-        try:
-            subprocess.run(["nvidia-smi"], capture_output=True, check=True)
-            return "nvidia"
-        except (subprocess.CalledProcessError, FileNotFoundError):
-            pass
-
-        try:
-            subprocess.run(["rocm-smi"], capture_output=True, check=True)
-            return "amd"
-        except (subprocess.CalledProcessError, FileNotFoundError):
-            pass
-
-        return "none"
-
-    def get_vram_usage(self) -> Optional[int]:
-        """Get current VRAM usage in MB"""
-        if self.gpu_type == "nvidia":
-            try:
-                result = subprocess.run(
-                    ["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
-                    capture_output=True, text=True, check=True
-                )
-                return int(result.stdout.strip())
-            except (subprocess.CalledProcessError, ValueError):
-                return None
-
-        elif self.gpu_type == "amd":
-            try:
-                result = subprocess.run(
-                    ["rocm-smi", "--showmemuse", "--csv"],
-                    capture_output=True, text=True, check=True
-                )
-                # Parse AMD output - this is approximate
-                lines = result.stdout.strip().split('\n')
-                if len(lines) > 1:
-                    # Extract memory usage from CSV format
-                    data = lines[1].split(',')
-                    if len(data) > 3:
-                        return int(float(data[3]) * 1024)  # Convert GB to MB
-            except (subprocess.CalledProcessError, ValueError, IndexError):
-                return None
-
-        return None
-
-    def get_ram_usage(self) -> int:
-        """Get current RAM usage in MB"""
-        return int(psutil.virtual_memory().used / 1024 / 1024)
+from hardware_monitor import HardwareMonitor, RealTimeMonitor, quick_hardware_check
 
 class OllamaOptimizer:
     """Main optimizer class for O3 test suite"""
