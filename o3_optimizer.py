@@ -303,10 +303,144 @@ class OllamaOptimizer:
                 run_index=run_index
             )
 
-    def generate_test_configs(self, model: str) -> List[TestConfig]:
-        """Generate test configurations for a model"""
+    def load_ai_config(self) -> Dict:
+        """Load AI-first configuration from o3_ai_config.yaml"""
+        config_path = Path("o3_ai_config.yaml")
+        if not config_path.exists():
+            # Fallback to defaults if AI config not available
+            print("⚠️  o3_ai_config.yaml not found, using fallback defaults")
+            return {
+                "search_strategy": {
+                    "initial_context_probe": 16384,
+                    "binary_search_factor": 1.5,
+                    "max_binary_iterations": 5,
+                    "batch_adaptation": {
+                        "initial_batch_large": 8,
+                        "initial_batch_medium": 16,
+                        "initial_batch_small": 32,
+                        "scale_up_factor": 1.5,
+                        "max_batch": 128
+                    }
+                }
+            }
 
-        # Model-specific parameter grids
+        try:
+            with open(config_path, 'r') as f:
+                return yaml.safe_load(f)
+        except Exception as e:
+            print(f"⚠️  Failed to load AI config: {e}, using defaults")
+            return {}  # Fallback values will be used
+
+    def binary_search_context(self, model: str, ai_config: Dict) -> List[TestConfig]:
+        """Generate configurations using binary search for context discovery"""
+        print(f"🔍 AI-First: Starting binary search for {model} context discovery")
+
+        # Get agentic focus categories from AI config
+        preset_categories = ai_config.get("preset_categories", {})
+        search_strategy = ai_config.get("search_strategy", {})
+
+        # Start with configured probe point (64k for high-capacity systems)
+        initial_probe = search_strategy.get("initial_context_probe", 16384)
+        binary_factor = search_strategy.get("binary_search_factor", 1.3)
+        max_iterations = search_strategy.get("max_binary_iterations", 5)
+
+        # Target ranges for extreme context exploitation
+        target_ranges = {
+            "max_context": (32768, 131072),     # 32k-128k range
+            "balanced": (12288, 65536),        # 12k-64k range for active use
+            "fast_response": (4096, 32768)     # 4k-32k range for quick responses
+        }
+
+        # Get model intelligence for sizing
+        model_intelligence = ai_config.get("model_intelligence", {})
+        size_categories = model_intelligence.get("size_categories", {})
+
+        # Determine model size category
+        model_size = "medium"  # default
+        for size, criteria in size_categories.items():
+            min_params = criteria.get("min_params", 0)
+            # Rough parameter estimate from model name
+            if "30b" in model or "27b" in model:
+                model_size = "large"
+                break
+            elif "3b" in model or "7b" in model:
+                model_size = "medium"
+                break
+            # else keep default medium
+
+        # Get initial batch from AI config based on model size
+        batch_adaptation = search_strategy.get("batch_adaptation", {})
+        if model_size == "large":
+            initial_batch = batch_adaptation.get("initial_batch_large", 8)
+        elif model_size == "medium":
+            initial_batch = batch_adaptation.get("initial_batch_medium", 16)
+        else:  # small
+            initial_batch = batch_adaptation.get("initial_batch_small", 32)
+
+        # Binary search configurations for each preset category
+        configs = []
+        num_thread = psutil.cpu_count(logical=False) or 8
+
+        print(f"🎯 Model {model}: Detected as {model_size}, starting batch size: {initial_batch}")
+
+        for preset_name, preset_config in preset_categories.items():
+            target_range = target_ranges.get(preset_name, (4096, 65536))
+
+            # Perform binary search within target range
+            low, high = target_range
+            iterations = 0
+            selected_contexts = []
+
+            # Always include initial probe point
+            selected_contexts.append(initial_probe)
+
+            # Binary search iterations
+            while low <= high and iterations < max_iterations:
+                mid = (low + high) // 2
+                selected_contexts.append(mid)
+
+                # Expand search space
+                if iterations < max_iterations // 2:
+                    low = int(mid * binary_factor)
+                    high = int(mid / binary_factor)
+                else:
+                    break
+
+                iterations += 1
+
+            # Final context sizes for this preset
+            context_sizes = sorted(set(selected_contexts))
+            context_sizes = [ctx for ctx in context_sizes if target_range[0] <= ctx <= target_range[1]]
+
+            print(f"📊 Preset '{preset_name}': Testing contexts {context_sizes[:3]}{'...' if len(context_sizes) > 3 else ''}")
+
+            # Generate configurations for this preset
+            for num_ctx in context_sizes[:3]:  # Limit to top 3 contexts per preset for efficiency
+                current_batch = initial_batch
+
+                # Scale batch for high context sizes
+                if num_ctx >= 65536:  # 64k+
+                    scale_up = batch_adaptation.get("scale_up_factor", 1.5)
+                    max_batch = batch_adaptation.get("max_batch", 128)
+                    current_batch = min(int(current_batch * scale_up), max_batch)
+
+                configs.append(TestConfig(
+                    model=model,
+                    num_ctx=num_ctx,
+                    batch=current_batch,
+                    num_predict=512,  # Use higher predict for agentic workflows
+                    num_thread=num_thread,
+                    f16_kv=True  # Always prefer f16_kv for performance on capable hardware
+                ))
+
+        print(f"✅ Generated {len(configs)} AI-optimized configurations for {model}")
+        return configs
+
+    def legacy_generate_configs(self, model: str) -> List[TestConfig]:
+        """Legacy configuration generation (fallback for compatibility)"""
+        print(f"📚 Using legacy configuration generation for {model}")
+
+        # Original model-specific parameter grids
         model_configs = {
             "qwen3-coder:30b": {
                 "num_ctx": [4096, 8192, 12288, 16384, 24576, 32768],
@@ -369,6 +503,23 @@ class OllamaOptimizer:
 
         return configs
 
+    def generate_test_configs(self, model: str) -> List[TestConfig]:
+        """Generate test configurations for a model - AI-First with Binary Search"""
+
+        # Attempt to load AI configuration
+        ai_config = self.load_ai_config()
+
+        # Use AI-first method if config loads successfully
+        if ai_config and ai_config.get("ai_guidance", {}).get("autonomous_tuning", True):
+            try:
+                return self.binary_search_context(model, ai_config)
+            except Exception as e:
+                print(f"⚠️  AI-First optimization failed for {model}: {e}")
+                print("   Falling back to legacy configuration generation")
+
+        # Legacy fallback
+        return self.legacy_generate_configs(model)
+
     def test_model(self, model: str, concurrency_levels: List[int] = [1, 2]) -> List[TestResult]:
         """Test a single model with all configurations"""
         print(f"\n=== Testing {model} ===")
@@ -426,7 +577,7 @@ class OllamaOptimizer:
         return all_results
 
     def save_results(self, model: str, results: List[TestResult]):
-        """Save test results to files"""
+        """Save test results to files - AI-First with Multi-Preset Optimization"""
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
         # Save JSONL log
@@ -438,100 +589,237 @@ class OllamaOptimizer:
                 json.dump(asdict(result), f)
                 f.write('\n')
 
-        # Generate summary
+        # Generate AI-first summary with preset categories
         successful_results = [r for r in results if r.success]
         if not successful_results:
+            print(f"⚠️  No successful tests for {model}")
             return
 
-        # Find best configurations
-        max_ctx_result = max(successful_results, key=lambda r: r.config.num_ctx)
-        fast_results = [r for r in successful_results if r.concurrency_level == 1]
-        if fast_results:
-            fast_ctx_result = max(fast_results, key=lambda r: r.tokens_per_sec)
-        else:
-            fast_ctx_result = max_ctx_result
+        print(f"🎯 AI-First: Analyzing {len(successful_results)} successful results for {model}")
 
+        # Load AI config for preset categories
+        ai_config = self.load_ai_config()
+        preset_categories = ai_config.get("preset_categories", {
+            "max_context": {"description": "Maximum stable context"},
+            "balanced": {"description": "Balanced performance"},
+            "fast_response": {"description": "Fast response optimization"}
+        })
+
+        # Find optimal configurations for each preset category
+        preset_results = {}
+
+        for preset_name, preset_config in preset_categories.items():
+            print(f"📊 Optimizing preset '{preset_name}'...")
+
+            if preset_name == "max_context":
+                # Find configuration with maximum stable context
+                best_result = max(successful_results, key=lambda r: r.config.num_ctx)
+                preset_results[preset_name] = best_result
+
+            elif preset_name == "balanced":
+                # Find balanced configuration using weighted scoring
+                target_range = preset_config.get("target_context_range", [12288, 65536])
+
+                # Filter results in target range
+                eligible_results = [
+                    r for r in successful_results
+                    if target_range[0] <= r.config.num_ctx <= target_range[1]
+                ]
+
+                if eligible_results:
+                    # Use weighted scoring: balance context utilization and throughput
+                    context_weight = preset_config.get("throughput_weight", 0.6)
+                    throughput_weight = preset_config.get("throughput_weight", 0.6)
+                    ttft_weight = preset_config.get("ttft_weight", 0.4)
+
+                    best_score = 0
+                    best_result = eligible_results[0]
+
+                    for result in eligible_results:
+                        # Normalize scores (context to 0-1 range, higher is better)
+                        context_score = min(result.config.num_ctx / max(target_range), 1.0)
+                        throughput_score = min(result.tokens_per_sec / 20.0, 1.0)  # Assume 20 tok/s is excellent
+                        ttft_score = max(0, 1 - (result.ttft_ms / 1000.0)) if result.ttft_ms else 0  # Lower TTFT is better
+
+                        total_score = (
+                            context_weight * context_score +
+                            throughput_weight * throughput_score +
+                            ttft_weight * ttft_score
+                        )
+
+                        if total_score > best_score:
+                            best_score = total_score
+                            best_result = result
+
+                    preset_results[preset_name] = best_result
+                else:
+                    # Fallback to best in range
+                    preset_results[preset_name] = max(successful_results, key=lambda r: r.tokens_per_sec)
+
+            elif preset_name == "fast_response":
+                # Find fastest response configuration above minimum context
+                min_context = preset_config.get("target_context_min", 4096)
+                eligible_results = [r for r in successful_results if r.config.num_ctx >= min_context]
+
+                if eligible_results:
+                    # Use weighted scoring favoring speed
+                    throughput_weight = preset_config.get("throughput_weight", 0.8)
+                    ttft_weight = preset_config.get("ttft_weight", 0.7)
+
+                    best_score = 0
+                    best_result = eligible_results[0]
+
+                    for result in eligible_results:
+                        throughput_score = min(result.tokens_per_sec / 30.0, 1.0)  # Assume 30 tok/s is excellent for fast response
+                        ttft_score = max(0, 1 - (result.ttft_ms / 500.0)) if result.ttft_ms else 0  # Lower TTFT is better
+
+                        total_score = throughput_weight * throughput_score + ttft_weight * ttft_score
+
+                        if total_score > best_score:
+                            best_score = total_score
+                            best_result = result
+
+                    preset_results[preset_name] = best_result
+                else:
+                    # Fallback to fastest overall
+                    preset_results[preset_name] = max(successful_results, key=lambda r: r.tokens_per_sec)
+
+        # Create AI-first summary with all presets
         summary = {
             "model": model,
             "timestamp": timestamp,
+            "optimization_type": "AI-First Binary Search",
             "total_tests": len(results),
             "successful_tests": len(successful_results),
-            "max_ctx_preset": {
-                "num_ctx": max_ctx_result.config.num_ctx,
-                "batch": max_ctx_result.config.batch,
-                "f16_kv": max_ctx_result.config.f16_kv,
-                "num_predict": max_ctx_result.config.num_predict,
-                "tokens_per_sec": max_ctx_result.tokens_per_sec,
-                "ttft_ms": max_ctx_result.ttft_ms
-            },
-            "fast_ctx_preset": {
-                "num_ctx": fast_ctx_result.config.num_ctx,
-                "batch": fast_ctx_result.config.batch,
-                "f16_kv": fast_ctx_result.config.f16_kv,
-                "num_predict": fast_ctx_result.config.num_predict,
-                "tokens_per_sec": fast_ctx_result.tokens_per_sec,
-                "ttft_ms": fast_ctx_result.ttft_ms
-            }
+            "ai_config_used": bool(ai_config),
+            "presets": {}
         }
 
-        # Save summary
+        # Add preset details
+        for preset_name, result in preset_results.items():
+            summary["presets"][preset_name] = {
+                "description": preset_categories[preset_name].get("description", preset_name),
+                "num_ctx": result.config.num_ctx,
+                "batch": result.config.batch,
+                "f16_kv": result.config.f16_kv,
+                "num_predict": result.config.num_predict,
+                "tokens_per_sec": result.tokens_per_sec,
+                "ttft_ms": result.ttft_ms,
+                "stability_score": self._calculate_stability_score(result, ai_config)
+            }
+
+        # Save AI-first summary
         summary_file = self.output_dir / "summaries" / f"{model.replace(':', '_')}_{timestamp}.json"
         summary_file.parent.mkdir(exist_ok=True)
 
         with open(summary_file, 'w') as f:
             json.dump(summary, f, indent=2)
 
-        # Update defaults
+        # Create agentic-focused defaults file
         defaults_file = self.output_dir / "defaults" / f"{model.replace(':', '_')}.yaml"
         defaults_file.parent.mkdir(exist_ok=True)
 
         defaults = {
             "model": model,
+            "optimization_type": "AI-First Extreme Context",
+            "hardware_target": "HP Strix AMD GPUs (64GB+ VRAM)",
             "updated_at": datetime.datetime.now().isoformat(),
-            "presets": {
-                "max_ctx": {
-                    "num_ctx": max_ctx_result.config.num_ctx,
-                    "batch": max_ctx_result.config.batch,
-                    "f16_kv": max_ctx_result.config.f16_kv,
-                    "num_predict": max_ctx_result.config.num_predict,
-                    "num_thread": max_ctx_result.config.num_thread,
-                    "temperature": max_ctx_result.config.temperature,
-                    "top_p": max_ctx_result.config.top_p,
-                    "notes": f"Max stable context: {max_ctx_result.tokens_per_sec:.1f} tok/s"
-                },
-                "fast_ctx": {
-                    "num_ctx": fast_ctx_result.config.num_ctx,
-                    "batch": fast_ctx_result.config.batch,
-                    "f16_kv": fast_ctx_result.config.f16_kv,
-                    "num_predict": fast_ctx_result.config.num_predict,
-                    "num_thread": fast_ctx_result.config.num_thread,
-                    "temperature": fast_ctx_result.config.temperature,
-                    "top_p": fast_ctx_result.config.top_p,
-                    "notes": f"Optimized speed: {fast_ctx_result.tokens_per_sec:.1f} tok/s"
-                }
-            }
+            "presets": {}
         }
+
+        # Convert preset results to defaults format
+        for preset_name, result in preset_results.items():
+            description = preset_categories[preset_name].get("description", preset_name)
+            stability = self._calculate_stability_score(result, ai_config)
+
+            defaults["presets"][preset_name] = {
+                "num_ctx": result.config.num_ctx,
+                "batch": result.config.batch,
+                "f16_kv": result.config.f16_kv,
+                "num_predict": result.config.num_predict,
+                "num_thread": result.config.num_thread,
+                "temperature": result.config.temperature,
+                "top_p": result.config.top_p,
+                "performance": {
+                    "tokens_per_sec": result.tokens_per_sec,
+                    "ttft_ms": result.ttft_ms,
+                    "stability_score": stability
+                },
+                "description": description,
+                "use_case": self._get_use_case_recommendation(preset_name, result.config.num_ctx)
+            }
 
         with open(defaults_file, 'w') as f:
             yaml.dump(defaults, f, default_flow_style=False)
 
-        print(f"\nResults saved:")
-        print(f"  Log: {log_file}")
-        print(f"  Summary: {summary_file}")
-        print(f"  Defaults: {defaults_file}")
-        print(f"\nRecommended settings for {model}:")
-        print(f"  Max Context: {max_ctx_result.config.num_ctx} tokens ({max_ctx_result.tokens_per_sec:.1f} tok/s)")
-        print(f"  Fast Context: {fast_ctx_result.config.num_ctx} tokens ({fast_ctx_result.tokens_per_sec:.1f} tok/s)")
+        # Print AI-first results summary
+        print(f"\n🎉 AI-First Optimization Complete for {model}")
+        print(f"Results saved to {self.output_dir}")
+
+        print("\n📊 Optimized Presets:")
+        for preset_name, result in preset_results.items():
+            ctx_k = result.config.num_ctx // 1024
+            tps = result.tokens_per_sec
+            ttft = result.ttft_ms
+            print(f"  {preset_name}: {ctx_k}k context, {tps:.1f} tok/s, {ttft:.0f}ms TTFT")
+
+    def _calculate_stability_score(self, result: TestResult, ai_config: Dict) -> float:
+        """Calculate stability score based on AI configuration parameters"""
+        # Simplified stability calculation - in real implementation this would use variance analysis
+        # from multiple test runs and hardware monitoring data
+        base_score = 0.85  # Assume good stability for successful tests
+
+        # Adjust based on resource usage (if available)
+        if result.vram_after_mb and result.ram_after_mb:
+            # Lower score if high resource usage (greater chance of instability)
+            resource_pressure = (result.vram_after_mb / (64 * 1024)) + (result.ram_after_mb / (64 * 1024 * 1024))
+            base_score -= resource_pressure * 0.1
+
+        return max(0.1, min(1.0, base_score))
+
+    def _get_use_case_recommendation(self, preset_name: str, context_size: int) -> str:
+        """Get use case recommendation based on preset and context size"""
+        ctx_k = context_size // 1024
+
+        if preset_name == "max_context":
+            if ctx_k >= 128:
+                return "Ultra-long conversations, massive document analysis, complex multi-agent workflows"
+            else:
+                return "Long-form reasoning, extensive tool traces, complex code generation"
+        elif preset_name == "balanced":
+            return "Typical agentic interactions, moderate tool usage, balanced performance needs"
+        elif preset_name == "fast_response":
+            return "Quick commands, real-time interactions, high-frequency tool calls"
+        else:
+            return f"Optimized for {preset_name} use cases with {ctx_k}k context"
 
 
 def main():
-    parser = argparse.ArgumentParser(description="O3 (Ozone) - Ollama Hardware Optimizer")
-    parser.add_argument("models", nargs="+", help="Models to test")
+    parser = argparse.ArgumentParser(description="O3 (Ozone) - AI-First Ollama Hardware Optimizer")
+    parser.add_argument("models", nargs="+", help="Models to test with AI-first optimization")
     parser.add_argument("--output-dir", default="o3_results", help="Output directory")
-    parser.add_argument("--concurrency", nargs="+", type=int, default=[1, 2], 
+    parser.add_argument("--concurrency", nargs="+", type=int, default=[1, 2],
                        help="Concurrency levels to test")
+    parser.add_argument("--ai-mode", action="store_true", default=True,
+                       help="Enable AI-first mode with binary search optimization")
+    parser.add_argument("--legacy-mode", action="store_true",
+                       help="Use legacy linear search mode")
 
     args = parser.parse_args()
+
+    # Print AI-first banner
+    if args.ai_mode and not args.legacy_mode:
+        print("""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     O3 (Ozone) - AI-First Optimizaton                      ║
+║                     Extreme Context Windows: 32k/64k/128k+                 ║
+║                                                                             ║
+║     🔍 Binary Search Context Discovery | 🎯 Multi-Preset Optimization       ║
+║     ⚡ Progressive Concurrency Testing | 🛡️ Hardware Protection             ║
+║     📊 Statistical Reliability         | 🤖 Learning & Adaptation          ║
+║                                                                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+        """)
 
     optimizer = OllamaOptimizer(args.output_dir)
 
