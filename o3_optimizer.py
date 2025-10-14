@@ -127,24 +127,76 @@ class OllamaOptimizer:
             return "unknown"
 
     def warmup_model(self, model: str) -> bool:
-        """Warmup model with a simple prompt"""
+        """Warmup model using API with safeguards against infinite responses"""
         print(f"  Warming up {model}...")
         try:
-            subprocess.run([
-                "ollama", "run", model,
-                "--num-ctx", "2048",
-                "--num-predict", "10",
-                self.warmup_prompt
-            ], capture_output=True, timeout=30, check=True)
-            time.sleep(2)  # Cool down
-            return True
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+            import requests  # Import here as not always available
+
+            # Use API with very constrained parameters
+            api_data = {
+                "model": model,
+                "prompt": "Say exactly: OK",
+                "stream": False,
+                "options": {
+                    "num_ctx": 256,      # Very small context
+                    "num_predict": 2,    # Bare minimum tokens
+                    "temperature": 0.0,  # Deterministic
+                    "seed": 42
+                }
+            }
+
+            # Make API request with timeout
+            response = requests.post(
+                "http://localhost:11434/api/generate",
+                json=api_data,
+                timeout=10  # 10 second timeout
+            )
+
+            if response.status_code != 200:
+                print(f"    API request failed with status: {response.status_code}")
+                return False
+
+            result = response.json()
+            response_text = result.get('response', '').strip()
+
+            # Validate response - should be very short and contain expected text
+            if len(response_text) > 10:  # Too long for "OK"
+                print(f"    Warning: Long warmup response ({len(response_text)} chars)")
+                print(f"    Response: {response_text[:30]}...")
+                return False
+            elif len(response_text) == 0:
+                print(f"    Warning: Empty warmup response")
+                return False
+
+            # Check if we got something reasonable
+            lower_resp = response_text.lower()
+            if "ok" in lower_resp or "ready" in lower_resp or len(response_text) <= 5:
+                print("    ✓ Model warmed up successfully via API")
+                time.sleep(1)  # Brief API cool down
+                return True
+            else:
+                print(f"    Warning: Unexpected warmup response: '{response_text}'")
+                return False
+
+        except requests.exceptions.RequestException as e:
+            print(f"    API warmup failed: {e}")
+            # Fallback: Try simple ollama run without flags (if model isn't loaded)
+            try:
+                print(f"    Falling back to simple ollama run...")
+                subprocess.run(["ollama", "run", model, "OK"],
+                              capture_output=True, timeout=5, check=True)
+                print("    ✓ Model warmed up with simple fallback")
+                return True
+            except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+                return False
+
+        except Exception as e:
+            print(f"    Warmup failed with error: {e}")
             return False
 
-    def run_single_test(self, config: TestConfig, run_id: str, 
+    def run_single_test(self, config: TestConfig, run_id: str,
                        concurrency_level: int, run_index: int) -> TestResult:
-        """Run a single test with given configuration"""
-
+        """Run a single test using Ollama API with proper safeguards"""
         # Get model digest
         model_digest = self.get_model_digest(config.model)
 
@@ -152,59 +204,76 @@ class OllamaOptimizer:
         vram_before = self.monitor.get_vram_usage()
         ram_before = self.monitor.get_ram_usage()
 
-        # Build ollama command
-        cmd = [
-            "ollama", "run", config.model,
-            "--num-ctx", str(config.num_ctx),
-            "--batch", str(config.batch),
-            "--num-predict", str(config.num_predict),
-            "--num-thread", str(config.num_thread),
-            "--temperature", str(config.temperature),
-            "--top-p", str(config.top_p),
-            "--seed", str(config.seed)
-        ]
-
-        if config.f16_kv:
-            cmd.extend(["--f16-kv", "true"])
-
-        cmd.append(self.test_prompt)
+        # Build API request
+        api_data = {
+            "model": config.model,
+            "prompt": self.test_prompt,
+            "stream": False,
+            "options": {
+                "num_ctx": config.num_ctx,
+                "batch": config.batch,
+                "num_predict": config.num_predict,
+                "num_thread": config.num_thread,
+                "temperature": config.temperature,
+                "top_p": config.top_p,
+                "seed": config.seed,
+                "f16_kv": config.f16_kv
+            }
+        }
 
         start_time = time.time()
-        ttft_time = None
 
         try:
-            # Run with timeout
-            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, 
-                                     stderr=subprocess.PIPE, text=True)
+            import requests
 
-            # Monitor for first token (approximate)
-            first_output = False
-            output_lines = []
+            # Make API request with generous timeout based on config
+            # Estimate timeout: 10 seconds base + 2 seconds per 1k context
+            estimated_timeout = 10 + (config.num_ctx / 1000 * 2) + (config.num_predict / 100 * 1)
+            timeout = min(max(estimated_timeout, 15), 120)  # Between 15-120 seconds
 
-            while True:
-                line = process.stdout.readline()
-                if line:
-                    if not first_output:
-                        ttft_time = time.time() - start_time
-                        first_output = True
-                    output_lines.append(line)
-                elif process.poll() is not None:
-                    break
+            response = requests.post(
+                "http://localhost:11434/api/generate",
+                json=api_data,
+                timeout=timeout
+            )
 
-            total_time = time.time() - start_time
-            return_code = process.wait(timeout=90)
+            total_response_time = time.time() - start_time
 
-            if return_code != 0:
-                stderr_output = process.stderr.read()
-                raise subprocess.CalledProcessError(return_code, cmd, stderr_output)
+            if response.status_code != 200:
+                stderr_output = f"API returned status {response.status_code}: {response.text}"
+                raise subprocess.CalledProcessError
 
-            # Parse output for token count (approximate)
-            full_output = ''.join(output_lines)
-            output_tokens = len(full_output.split()) if full_output else 0
-            tokens_per_sec = output_tokens / total_time if total_time > 0 else 0
+            result = response.json()
+            response_text = result.get('response', '')
+
+            # Validate response is reasonable
+            if len(response_text) < 5:  # Too short for a reasonable response
+                return TestResult(
+                    timestamp=datetime.datetime.now().isoformat(),
+                    run_id=run_id,
+                    model=config.model,
+                    model_digest=model_digest,
+                    config=config,
+                    success=False,
+                    error=f"Response too short: {len(response_text)} chars",
+                    ttft_ms=None,
+                    total_ms=total_response_time * 1000,
+                    output_tokens=0,
+                    tokens_per_sec=0,
+                    vram_before_mb=vram_before,
+                    vram_after_mb=None,
+                    ram_before_mb=ram_before,
+                    ram_after_mb=None,
+                    concurrency_level=concurrency_level,
+                    run_index=run_index
+                )
+
+            # Calculate performance metrics
+            output_tokens = len(response_text.split()) if response_text else 0
+            tokens_per_sec = output_tokens / total_response_time if total_response_time > 0 else 0
 
             # Capture after state
-            time.sleep(1)  # Let system stabilize
+            time.sleep(0.5)  # Brief stabilization
             vram_after = self.monitor.get_vram_usage()
             ram_after = self.monitor.get_ram_usage()
 
@@ -216,8 +285,8 @@ class OllamaOptimizer:
                 config=config,
                 success=True,
                 error=None,
-                ttft_ms=ttft_time * 1000 if ttft_time else None,
-                total_ms=total_time * 1000,
+                ttft_ms=total_response_time * 1000,  # Approximate - total time for now
+                total_ms=total_response_time * 1000,
                 output_tokens=output_tokens,
                 tokens_per_sec=tokens_per_sec,
                 vram_before_mb=vram_before,
@@ -228,7 +297,7 @@ class OllamaOptimizer:
                 run_index=run_index
             )
 
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+        except (requests.exceptions.RequestException, subprocess.CalledProcessError) as e:
             return TestResult(
                 timestamp=datetime.datetime.now().isoformat(),
                 run_id=run_id,
@@ -253,7 +322,7 @@ class OllamaOptimizer:
         """Load AI-first configuration from o3_ai_config.yaml"""
         config_path = Path("o3_ai_config.yaml")
         if not config_path.exists():
-            # Fallback to defaults if AI config not available
+            # Fallback to defaults if AI config not found
             print("⚠️  o3_ai_config.yaml not found, using fallback defaults")
             return {
                 "search_strategy": {
@@ -389,43 +458,43 @@ class OllamaOptimizer:
         # Original model-specific parameter grids
         model_configs = {
             "qwen3-coder:30b": {
-                "num_ctx": [4096, 8192, 12288, 16384, 24576, 32768],
-                "batch": [8, 16],
+                "num_ctx": [4096, 8192, 12288, 16384, 24576, 32768, 49152, 65536, 81920, 98304, 114688, 131072],
+                "batch": [8, 16, 32],
                 "f16_kv": [True, False],
-                "num_predict": [256, 512]
+                "num_predict": [256, 512, 1024]
             },
             "orieg/gemma3-tools:27b-it-qat": {
-                "num_ctx": [4096, 8192, 12288, 16384, 24576],
-                "batch": [8, 16],
+                "num_ctx": [4096, 8192, 12288, 16384, 24576, 32768, 49152, 65536, 81920, 98304],
+                "batch": [8, 16, 32],
                 "f16_kv": [True, False],
-                "num_predict": [256, 512]
+                "num_predict": [256, 512, 1024]
             },
             "liquid-rag:latest": {
-                "num_ctx": [8192, 16384, 24576, 32768],
-                "batch": [16, 32],
+                "num_ctx": [8192, 16384, 24576, 32768, 49152, 65536, 81920, 98304, 114688, 131072],
+                "batch": [16, 32, 64],
                 "f16_kv": [True],
-                "num_predict": [256, 512]
+                "num_predict": [256, 512, 1024]
             },
             "qwen2.5:3b-instruct": {
-                "num_ctx": [8192, 16384, 24576, 32768],
-                "batch": [16, 32],
+                "num_ctx": [8192, 16384, 24576, 32768, 49152, 65536, 81920, 98304, 114688, 131072],
+                "batch": [16, 32, 64],
                 "f16_kv": [True],
-                "num_predict": [256, 512]
+                "num_predict": [256, 512, 1024]
             },
             "gemma3:latest": {
-                "num_ctx": [4096, 8192, 12288, 16384],
-                "batch": [16, 32],
+                "num_ctx": [4096, 8192, 12288, 16384, 24576, 32768, 49152, 65536, 81920, 98304, 114688, 131072],
+                "batch": [16, 32, 64],
                 "f16_kv": [True],
-                "num_predict": [256, 512]
+                "num_predict": [256, 512, 1024]
             }
         }
 
         # Default config for unknown models
         default_config = {
-            "num_ctx": [4096, 8192, 16384],
-            "batch": [16],
+            "num_ctx": [4096, 8192, 16384, 24576, 32768, 49152, 65536, 81920, 98304, 114688, 131072],
+            "batch": [16, 32],
             "f16_kv": [True],
-            "num_predict": [256]
+            "num_predict": [256, 512, 1024]
         }
 
         config_params = model_configs.get(model, default_config)
@@ -438,6 +507,15 @@ class OllamaOptimizer:
             for batch in config_params["batch"]:
                 for f16_kv in config_params["f16_kv"]:
                     for num_predict in config_params["num_predict"]:
+                        # Cpu-based configuration optimization - higher batch for larger contexts
+                        if num_ctx >= 65536:  # 64k+
+                            if batch < 32:
+                                continue  # Skip small batches for huge contexts on CPU
+                        elif num_ctx >= 32768:  # 32k+
+                            if batch < 16:  # Allow 16+ for 32k on up
+                                continue
+                        # else: keep all batch sizes for smaller contexts
+
                         configs.append(TestConfig(
                             model=model,
                             num_ctx=num_ctx,
@@ -446,6 +524,20 @@ class OllamaOptimizer:
                             num_thread=num_thread,
                             f16_kv=f16_kv
                         ))
+
+        # If we're CPU-only and have large memory, be more aggressive
+        if self.monitor.gpu_type == "none":  # CPU-only system
+            total_ram_gb = psutil.virtual_memory().total / 1024 / 1024 / 1024
+            if total_ram_gb >= 32:  # Large RAM system
+                print(f"💪 CPU-Only System with {total_ram_gb:.1f}GB RAM - Pushing Maximum Context Ranges")
+
+                # Add extreme context configurations
+                extreme_configs = [
+                    TestConfig(model, 131072, 64, 1024, num_thread, True) for model in model_configs.keys()
+                    if model == model  # Only for current model
+                ]
+                configs.extend(extreme_configs)
+                print(f"  Added {len(extreme_configs)} extreme context configurations")
 
         return configs
 
@@ -756,15 +848,13 @@ def main():
     # Print AI-first banner
     if args.ai_mode and not args.legacy_mode:
         print("""
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                     O3 (Ozone) - AI-First Optimizaton                      ║
-║                     Extreme Context Windows: 32k/64k/128k+                 ║
-║                                                                             ║
-║     🔍 Binary Search Context Discovery | 🎯 Multi-Preset Optimization       ║
-║     ⚡ Progressive Concurrency Testing | 🛡️ Hardware Protection             ║
-║     📊 Statistical Reliability         | 🤖 Learning & Adaptation          ║
-║                                                                             ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+                    O3 (Ozone) - AI-First Optimization
+                    Extreme Context Windows: 32k/64k/128k+
+
+     * Binary Search Context Discovery | * Multi-Preset Optimization
+     * Progressive Concurrency Testing | * Hardware Protection
+     * Statistical Reliability         | * Learning & Adaptation
+
         """)
 
     optimizer = OllamaOptimizer(args.output_dir)

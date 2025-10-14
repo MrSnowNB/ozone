@@ -1,10 +1,12 @@
-# O3 (Ozone) - Ollama Open-Source Optimizer
+# O3 (Ozone) - AI-First Ollama Hardware Optimizer ⚡
+
+*Extreme Context Windows: 32k/64k/128k+*
 
 ![O3 Logo](https://img.shields.io/badge/O3-Ozone-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.7+-green?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
-**Hardware-focused performance optimization suite for Ollama models, designed for agentic workflows and maximum context utilization.**
+**AI-first optimization system that discovers optimal Ollama hardware settings using binary search algorithms for maximum context length and throughput.**
 
 ## 🎯 Purpose
 
