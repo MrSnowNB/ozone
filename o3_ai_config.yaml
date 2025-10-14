@@ -1,0 +1,219 @@
+---
+# O3 (Ozone) AI-First Configuration
+# Human-first: Intuitive optimization with AI-guided decisions
+# AI-first: Declarative, adaptive, and autonomously optimizable
+
+# 🎯 Optimization Objectives
+objectives:
+  # Primary: Agentic workflows need maximum stable context
+  max_context_priority: 0.8
+  # Secondary: Balance speed for interactive responses
+  throughput_priority: 0.6
+  # Tertiary: Minimize initial response time
+  ttft_priority: 0.4
+  # System: Ensure hardware stability
+  stability_margin: 0.9  # 90% max resource utilization
+
+# 🤖 AI-Driven Configuration
+ai_guidance:
+  # Enable AI to adapt configurations based on hardware learning
+  autonomous_tuning: true
+  # Use machine learning for parameter prediction
+  predictive_optimization: true
+  # Continuous learning from successful configurations
+  adaptive_search: true
+
+# 🏗️ Hardware-Aware Search Strategy
+search_strategy:
+  # Binary search for context discovery (logarithmic vs linear)
+  context_discovery: binary_search
+  # Start with middle of high-capacity range for this system
+  initial_context_probe: 65536   # 64k tokens optimized for HP Strix hardware
+  # How much to expand/contract on success/failure
+  binary_search_factor: 1.3     # Conservative scaling for stability
+  # Maximum iterations before declaring max context
+  max_binary_iterations: 7      # Allow more iterations for high contexts
+
+  # Adaptive batch sizing based on observed VRAM usage
+  batch_adaptation:
+    enabled: true
+    # Aggressive batch sizing for high VRAM capacity
+    initial_batch_large: 16      # for 27B+ models - doubled for capacity
+    initial_batch_medium: 32     # for 3-8B models - increased
+    initial_batch_small: 64      # for <3B models - high batch for efficiency
+    # Scale up aggressively based on success margin
+    scale_up_factor: 2.0         # More aggressive scaling
+    # Maximum batch to test for high throughput
+    max_batch: 256
+
+# 📊 Multi-Preset Optimization
+preset_categories:
+  # Maximum stable context for complex agentic workflows
+  max_context:
+    target_context_percentile: 95  # Must succeed 95% of time
+    throughput_weight: 0.3         # Speed less important than context
+    ttft_weight: 0.2              # Latency acceptable for max context
+    description: "For long conversations, document analysis, complex reasoning"
+
+  # Balanced performance for typical agentic interactions
+  balanced:
+    target_context_range: [8192, 12288]  # Sweet spot for most agentic work
+    throughput_weight: 0.6               # Good speed important
+    ttft_weight: 0.4                    # Responsive but not critical
+    description: "For tool-using agents, code generation, moderate context needs"
+
+  # Fast response for quick tool calls and real-time interaction
+  fast_response:
+    target_context_min: 4096
+    throughput_weight: 0.8              # Maximize speed
+    ttft_weight: 0.7                   # Minimize latency
+    description: "For quick commands, simple queries, high-frequency interactions"
+
+# 🔬 Enhanced Testing Configuration
+testing:
+  # Statistical validation
+  statistical_validation:
+    min_samples_per_config: 5          # More runs for reliability
+    confidence_threshold: 0.85        # 85% success rate for "stable"
+    variance_tolerance: 0.15          # Max 15% performance variance
+
+  # Progressive concurrency testing
+  concurrency_progression:
+    levels: [1, 2, 4, 8]              # Test increasing concurrent loads
+    stabilization_delay: 2             # Wait 2s between concurrency increases
+    max_concurrent_timeouts: 2         # Allow some failures before declaring unstable
+
+  # Smart timeouts based on expected performance
+  adaptive_timeouts:
+    base_timeout: 60                   # Base timeout in seconds
+    context_multiplier: 0.5           # +0.5s per 1k context tokens
+    batch_multiplier: 0.2             # +0.2s per batch unit
+    min_timeout: 30
+    max_timeout: 300
+
+# 🖥️ Advanced Hardware Monitoring
+hardware_monitoring:
+  # Real-time peak tracking during generation
+  peak_detection:
+    enabled: true
+    sampling_interval_ms: 100         # Check every 100ms during generation
+    track_vram_peak: true
+    track_ram_peak: true
+    track_temperature: true
+
+  # GPU-specific optimizations
+  gpu_handling:
+    nvidia:
+      command: "nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits"
+      temperature_command: "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits"
+      utilization_command: "nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits"
+
+    amd:
+      command: "rocm-smi --showmemuse --csv"
+      # Parse VRAM from CSV format: Device,VRAM Total Memory (B),VRAM Total Used (B)
+      memory_field_index: 2
+      temperature_command: "rocm-smi --showtemp --csv"
+      utilization_command: "rocm-smi --showuse --csv"
+
+  # Safety thresholds
+  safety_thresholds:
+    max_vram_percent: 90              # Stop testing at 90% VRAM usage
+    max_ram_percent: 85               # Stop testing at 85% RAM usage
+    max_temperature_c: 85             # Stop testing at 85°C
+    max_cpu_percent: 90               # Stop testing at 90% CPU usage
+
+  # Memory headroom for stable high-context operation
+  resource_headroom:
+    vram_reserve_mb: 4096             # Reserve 4GB VRAM for high-context stability
+    ram_reserve_mb: 4096              # Reserve 4GB RAM for system
+    context_scaling_factor: 1.0       # No safety margin needed for capacity testing
+
+# 📈 Learning and Adaptation
+learning_system:
+  # Learn from successful configurations
+  configuration_learning:
+    enabled: true
+    # Track hardware-specific patterns
+    hardware_profiles:
+      store_results: true
+      reuse_learned_configs: true
+      update_frequency_days: 7
+
+  # Performance prediction
+  prediction_model:
+    enabled: true
+    # Predict success likelihood before testing
+    pre_test_prediction: true
+    # Learn from failures to avoid similar configs
+    failure_pattern_learning: true
+
+  # Self-optimization
+  auto_improvement:
+    # Automatically adjust search parameters based on results
+    adaptive_search_params: true
+    # Suggest new test ranges based on observed limits
+    range_expansion: true
+    # Identify optimal test order
+    test_prioritization: true
+
+# 🎛️ Model-Specific Intelligence
+model_intelligence:
+  # Size-based categories with optimal starting points
+  size_categories:
+    large: { min_params: 20e9, context_start: 4096, batch_start: 8, f16_kv_preference: [true, false] }
+    medium: { min_params: 3e9, context_start: 8192, batch_start: 16, f16_kv_preference: [true] }
+    small: { min_params: 1e9, context_start: 16384, batch_start: 32, f16_kv_preference: [true] }
+
+  # Use case optimization
+  use_case_optimization:
+    coding: { priority: context, context_weight: 0.8, throughput_weight: 0.5 }
+    rag: { priority: throughput, context_weight: 0.6, throughput_weight: 0.8 }
+    chat: { priority: balance, context_weight: 0.5, throughput_weight: 0.7 }
+    tools: { priority: speed, context_weight: 0.4, throughput_weight: 0.9 }
+
+# 🔧 Fine-Tuning Controls
+fine_tuning:
+  # Performance targets (tokens/sec) by model size
+  throughput_targets:
+    small_models: { min: 15, target: 25, max: 40 }
+    medium_models: { min: 10, target: 20, max: 30 }
+    large_models: { min: 5, target: 12, max: 20 }
+
+  # TTFT targets (milliseconds)
+  ttft_targets:
+    small_models: { min: 200, target: 500, max: 1000 }
+    medium_models: { min: 300, target: 750, max: 1500 }
+    large_models: { min: 500, target: 1000, max: 2500 }
+
+# 📋 Quality Assurance
+quality_assurance:
+  # Validation checks
+  pre_test_validation:
+    hardware_check: true              # Verify hardware compatibility
+    model_verification: true          # Verify model availability
+    resource_check: true              # Verify sufficient resources
+
+  post_test_validation:
+    statistical_significance: true     # Ensure results are statistically valid
+    hardware_correlation: true        # Verify results match hardware
+    configuration_consistency: true   # Check config consistency
+
+  # Data quality
+  result_filtering:
+    remove_outliers: true             # Remove statistical outliers
+    validate_consistency: true        # Cross-validate results
+    enforce_hardware_limits: true     # Reject impossible results
+
+# 🚀 Deployment Optimization
+deployment:
+  # Automatically deploy best configurations
+  auto_deployment:
+    enabled: true
+    update_threshold: 0.1            # Deploy if 10% improvement
+    backup_configs: true             # Keep old configs as backup
+
+  # Configuration persistence
+  persistence:
+    yaml_format: true                # Save as YAML for readability
+    json_backup: true                # Also save as JSON for processing
+    versioning: true                 # Version configuration files

@@ -1,0 +1,142 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "O3: Test Single Model",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "o3_optimizer.py",
+                "${input:modelName}"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "O3: Test All Coding Models",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "o3_optimizer.py",
+                "qwen3-coder:30b",
+                "orieg/gemma3-tools:27b-it-qat"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "O3: Test All RAG Models",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "o3_optimizer.py",
+                "liquid-rag:latest"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "O3: Test All Chat Models",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "o3_optimizer.py",
+                "qwen2.5:3b-instruct",
+                "gemma3:latest"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "O3: Full Test Suite",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "o3_optimizer.py",
+                "qwen3-coder:30b",
+                "orieg/gemma3-tools:27b-it-qat",
+                "liquid-rag:latest",
+                "qwen2.5:3b-instruct",
+                "gemma3:latest"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "O3: Generate Summary Report",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "o3_report_generator.py"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "dependsOn": [],
+            "problemMatcher": []
+        },
+        {
+            "label": "O3: Install Dependencies",
+            "type": "shell",
+            "command": "pip",
+            "args": [
+                "install",
+                "-r",
+                "requirements.txt"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "new"
+            },
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "modelName",
+            "description": "Enter the model name to test",
+            "default": "qwen3-coder:30b",
+            "type": "promptString"
+        }
+    ]
+}
