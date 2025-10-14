@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-10-14T17:36:38.856167",
+  "os": "nt",
+  "python_version": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+  "cpu_info": {
+    "cores_physical": 16,
+    "cores_logical": 32,
+    "cpu_freq": {
+      "current": 2500.0,
+      "min": 0.0,
+      "max": 3000.0
+    }
+  },
+  "memory": {
+    "total_ram_gb": 63.78,
+    "available_ram_gb": 31.61
+  },
+  "gpu_type": "none",
+  "ollama_version": "ollama version is 0.12.5",
+  "available_models": "NAME                             ID              SIZE      MODIFIED     \nqwen3-coder:30b                  06c1097efce0    18 GB     9 hours ago     \norieg/gemma3-tools:27b-it-qat    e9bddb0fafe2    18 GB     25 hours ago    \ngemma3:27b                       a418f5838eaf    17 GB     6 days ago      \nliquid-rag:latest                8f8ba05d2b45    730 MB    2 weeks ago     \ndeepseek-r1:1.5b                 e0979632db5a    1.1 GB    2 weeks ago     \ndeepseek-r1:8b                   6995872bfe4c    5.2 GB    2 weeks ago     \nqwen2.5:3b-instruct              357c53fb659c    1.9 GB    4 weeks ago     \ngemma3:latest                    a2af6cc3eb7f    3.3 GB    4 weeks ago     \n"
+}
