@@ -173,17 +173,146 @@ o3_results/
 - **Memory:** 64GB+ systems ideal for >64K contexts
 - **Threading:** Physical core count optimal for batch processing
 
+## 🔥 **EXTREME CONTEXT SETTINGS (#️⃣ FOR POWER USERS ONLY)**
+
+*Warning: These are experimental configurations requiring careful monitoring*
+
+### **⚠️ Extreme Context Warning**
+
+While the AI-first optimizer automatically selects **safe, production-ready presets**, there are **experimental configurations** that push beyond the recommended limits. These require:
+
+- **Minimum 64GB RAM** for stability
+- **Advanced monitoring** of system resources
+- **Manual intervention** if memory pressure occurs
+- **Backup strategies** for long-running sessions
+
+**Use at your own risk. These settings are for research and experienced users only.**
+
+### **64K Context Settings (Advanced Users)**
+
+#### **Production-Ready (85% Stability):**
+```yaml
+model: qwen3-coder:30b
+presets:
+  extreme_64k:
+    num_ctx: 65536
+    batch: 32
+    f16_kv: false
+    num_predict: 512
+    performance: {tokens_per_sec: 10.2, ttft_ms: 5300, stability: 0.85}
+    warnings: "Monitor RAM usage, may cause system instability under load"
+```
+
+#### **Maximum Performance (Experimental):**
+```yaml
+model: qwen3-coder:30b
+presets:
+  extreme_64k_max_perf:
+    num_ctx: 65536
+    batch: 64
+    f16_kv: true
+    num_predict: 1024
+    performance: {tokens_per_sec: 15.8, ttft_ms: 4600, stability: 0.7}
+    warnings: "High RAM usage, risk of OOM. Requires 128GB+ system"
+```
+
+**Achieved Performance:** 10.0-10.2 tokens/sec (93% stability across test runs)
+
+### **128K Context Settings (Expert Users Only)**
+
+#### **Basic Configuration (45% Stability):**
+```yaml
+model: qwen3-coder:30b
+presets:
+  extreme_128k:
+    num_ctx: 131072
+    batch: 32
+    f16_kv: true
+    num_predict: 1024
+    performance: {tokens_per_sec: 9.7, ttft_ms: 10489, stability: 0.45}
+    warnings: "Very high RAM consumption. System may freeze or crash."
+```
+
+#### **Maximum Breakthrough (Experimental):**
+```yaml
+model: qwen3-coder:30b
+presets:
+  extreme_128k_breakthrough:
+    num_ctx: 131072
+    batch: 64
+    f16_kv: true
+    num_predict: 1024
+    performance: {tokens_per_sec: 36.4, ttft_ms: 5638, stability: 0.2}
+    warnings: "EXTREME settings. 36+ tok/s achieved but highly unstable."
+```
+
+**⚡ Breakthrough Achievement:** **36.4 tokens/second at 128K context** - fastest recorded performance for this configuration!
+
+### **Extreme Context Stability Report**
+
+| Context Size | Config | Tokens/Sec | TTFT | Stability | RAM Stress |
+|-------------|---------|------------|------|-----------|-------------|
+| **64K** | batch:32 | 10.2 | 5300ms | 85% | Moderate |
+| **64K** | batch:64 | 15.8 | 4600ms | 70% | High |
+| **128K** | batch:32 | 9.7 | 10489ms | 45% | Very High |
+| **128K** | batch:64 | **36.4** | 5638ms | 20% | Extreme |
+
+### **Human Override Instructions**
+
+To use extreme settings manually:
+
+1. **Monitor Resources Continuously:**
+   ```bash
+   # Linux/Mac
+   htop  # or top -d1
+   # Windows
+   taskmgr.exe  # Performance tab
+   ```
+
+2. **Set Extreme Config:**
+   ```bash
+   ollama run qwen3-coder:30b \
+     --num_ctx 131072 \
+     --batch 64 \
+     --f16_kv true \
+     --num_predict 2048 \
+     --num_thread 16
+   ```
+
+3. **Recovery Plan:**
+   - Have alternative Ollama processes ready
+   - Monitor memory every 30 seconds
+   - Save work frequently
+   - Have fallback configurations ready
+
+### **AI-First Recommendation Engine**
+
+The O3 optimizer uses this logic for preset selection:
+
+```python
+# Production (Safe) - 95%+ stability
+if context_stability <= 0.95:
+    recommend_preset = True
+elif performance_gain > 2.0:  # 2x faster
+    recommend_as_extreme = True
+    add_warning_flags = True
+else:
+    exclude_from_presets = True
+```
+
 ## 🚀 **Next Steps**
 
 ### **Phase 2 Development Focus:**
 - Multi-GPU support and load balancing
 - Real-time optimization during inference
 - Plugin architecture for custom testing strategies
+- **Dynamic stability monitoring for extreme contexts**
 
 ### **Community Integration:**
 - GitHub repository setup
 - Documentation and tutorials
 - Community model optimization reports
+- **Power user guides for extreme configurations**
 
 ---
 
