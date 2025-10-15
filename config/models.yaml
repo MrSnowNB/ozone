@@ -1,0 +1,52 @@
+# O3 Model Configurations
+# Define supported models and their testing parameters
+
+models:
+  # Large coding models (27B-30B)
+  qwen3-coder:30b:
+    category: large
+    use_case: coding
+    context_start: 4096
+    batch_start: 8
+    f16_kv_preference: [true, false]
+    description: "Large coding model with excellent context handling"
+
+  orieg/gemma3-tools:27b-it-qat:
+    category: large
+    use_case: coding
+    context_start: 4096
+    batch_start: 8
+    f16_kv_preference: [true]
+    description: "Tools-enabled model optimized for code generation"
+
+  # RAG models
+  liquid-rag:latest:
+    category: medium
+    use_case: rag
+    context_start: 8192
+    batch_start: 16
+    f16_kv_preference: [true]
+    description: "Optimized for document processing and retrieval"
+
+  # Chat/instruct models
+  qwen2.5:3b-instruct:
+    category: small
+    use_case: chat
+    context_start: 16384
+    batch_start: 32
+    f16_kv_preference: [true]
+    description: "Lightweight instruction-following model"
+
+  gemma3:latest:
+    category: medium
+    use_case: chat
+    context_start: 8192
+    batch_start: 16
+    f16_kv_preference: [true]
+    description: "Versatile chat and instruction model"
+
+testing:
+  categories:
+    small: { min_params: 1e9, max_context: 32768 }
+    medium: { min_params: 3e9, max_context: 131072 }
+    large: { min_params: 20e9, max_context: 262144 }
