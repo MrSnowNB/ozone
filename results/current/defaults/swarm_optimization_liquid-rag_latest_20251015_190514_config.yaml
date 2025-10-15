@@ -1,0 +1,18 @@
+configuration:
+  batch: 1
+  f16_kv: true
+  num_ctx: 4096
+  num_predict: 32
+  num_thread: 1
+  temperature: 0.1
+  top_p: 0.9
+generated_at: '20251015_190514'
+max_stable_concurrency: 24
+model: liquid-rag:latest
+optimal_concurrency: 24
+optimization_target: swarm_concurrency_maximization
+performance:
+  peak_throughput_total: 60.909116815465715
+  resource_efficiency: 2.5378798673110716
+  throughput_per_agent: 2.5378798673110716
+use_case: Concurrent quick memory agents for swarm intelligence

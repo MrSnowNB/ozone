@@ -1,0 +1,49 @@
+hardware_target: HP Strix AMD GPUs (64GB+ VRAM)
+model: liquid-rag:latest
+optimization_type: AI-First Extreme Context
+presets:
+  balanced:
+    batch: 32
+    description: Typical agentic interactions, moderate tool usage, balanced performance
+      needs
+    f16_kv: true
+    num_ctx: 18432
+    num_predict: 512
+    num_thread: 16
+    performance:
+      stability_score: 0.85
+      tokens_per_sec: 37.054370180618825
+      ttft_ms: 5532.4108600616455
+    temperature: 0.2
+    top_p: 0.95
+    use_case: Typical agentic interactions, moderate tool usage, balanced performance
+      needs
+  fast_response:
+    batch: 64
+    description: Quick commands, real-time interactions, high-frequency tool calls
+    f16_kv: true
+    num_ctx: 81920
+    num_predict: 512
+    num_thread: 16
+    performance:
+      stability_score: 0.85
+      tokens_per_sec: 33.702720022414326
+      ttft_ms: 6082.595109939575
+    temperature: 0.2
+    top_p: 0.95
+    use_case: Quick commands, real-time interactions, high-frequency tool calls
+  max_context:
+    batch: 64
+    description: Long-form reasoning, extensive tool traces, complex code generation
+    f16_kv: true
+    num_ctx: 81920
+    num_predict: 512
+    num_thread: 16
+    performance:
+      stability_score: 0.85
+      tokens_per_sec: 33.702720022414326
+      ttft_ms: 6082.595109939575
+    temperature: 0.2
+    top_p: 0.95
+    use_case: Long-form reasoning, extensive tool traces, complex code generation
+updated_at: '2025-10-15T18:56:46.209128'

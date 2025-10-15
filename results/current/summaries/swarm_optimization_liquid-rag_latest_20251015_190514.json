@@ -1,0 +1,1003 @@
+{
+  "model": "liquid-rag:latest",
+  "test_type": "swarm_concurrency_optimization",
+  "timestamp": "2025-10-15T19:02:40.547422",
+  "config": {
+    "num_ctx": 4096,
+    "batch": 1,
+    "num_predict": 32,
+    "num_thread": 1,
+    "f16_kv": true,
+    "temperature": 0.1,
+    "top_p": 0.9
+  },
+  "concurrency_tests": {
+    "8": {
+      "concurrency_level": 8,
+      "total_agents": 8,
+      "successful_agents": 8,
+      "success_rate": 1.0,
+      "total_throughput": 50.3576688997151,
+      "avg_ttft_ms": 6426.883041858673,
+      "total_test_time": 11.379273891448975,
+      "agent_results": [
+        {
+          "agent_id": 5,
+          "success": true,
+          "tokens_per_sec": 17.486074561051872,
+          "ttft_ms": 1486.8974685668945,
+          "output_tokens": 26,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate effectively to tackle complex challen"
+        },
+        {
+          "agent_id": 2,
+          "success": true,
+          "tokens_per_sec": 9.302808038815325,
+          "ttft_ms": 2902.3494720458984,
+          "output_tokens": 27,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. When multiple AI agen"
+        },
+        {
+          "agent_id": 6,
+          "success": true,
+          "tokens_per_sec": 6.511308470119745,
+          "ttft_ms": 4300.210952758789,
+          "output_tokens": 28,
+          "response_text": "That's a great reminder! Collaboration is key for AI agents to achieve complex goals and overcome ch"
+        },
+        {
+          "agent_id": 7,
+          "success": true,
+          "tokens_per_sec": 4.9016791475155665,
+          "ttft_ms": 5712.328195571899,
+          "output_tokens": 28,
+          "response_text": "That's a great reminder! Collaboration is key for AI agents to achieve complex goals and overcome ch"
+        },
+        {
+          "agent_id": 4,
+          "success": true,
+          "tokens_per_sec": 3.931149878753811,
+          "ttft_ms": 7122.597932815552,
+          "output_tokens": 28,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate and work together to achieve common g"
+        },
+        {
+          "agent_id": 1,
+          "success": true,
+          "tokens_per_sec": 3.0419132058708875,
+          "ttft_ms": 8547.252416610718,
+          "output_tokens": 26,
+          "response_text": "That's correct! AI agents, even those operating independently, can collaborate and coordinate their "
+        },
+        {
+          "agent_id": 3,
+          "success": true,
+          "tokens_per_sec": 2.809795588022887,
+          "ttft_ms": 9965.137720108032,
+          "output_tokens": 28,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate and work together to achieve common g"
+        },
+        {
+          "agent_id": 0,
+          "success": true,
+          "tokens_per_sec": 2.372940009564997,
+          "ttft_ms": 11378.290176391602,
+          "output_tokens": 27,
+          "response_text": "That's a great reminder! You're absolutely right, AI agents are designed to collaborate and leverage"
+        }
+      ]
+    },
+    "16": {
+      "concurrency_level": 16,
+      "total_agents": 16,
+      "successful_agents": 16,
+      "success_rate": 1.0,
+      "total_throughput": 60.909116815465715,
+      "avg_ttft_ms": 11933.5428327322,
+      "total_test_time": 22.416730880737305,
+      "agent_results": [
+        {
+          "agent_id": 1,
+          "success": true,
+          "tokens_per_sec": 16.840076638074606,
+          "ttft_ms": 1484.5538139343262,
+          "output_tokens": 25,
+          "response_text": "That's correct! AI agents, whether they're designed as a single entity or distributed across multipl"
+        },
+        {
+          "agent_id": 3,
+          "success": true,
+          "tokens_per_sec": 9.073450399461976,
+          "ttft_ms": 2865.5030727386475,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. By working collaborat"
+        },
+        {
+          "agent_id": 2,
+          "success": true,
+          "tokens_per_sec": 6.817297550449115,
+          "ttft_ms": 4253.88503074646,
+          "output_tokens": 29,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate and work together to achieve complex "
+        },
+        {
+          "agent_id": 4,
+          "success": true,
+          "tokens_per_sec": 4.2470396685240495,
+          "ttft_ms": 5650.9950160980225,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 4/16 is referring to the concept of multi-agent systems in artificial intellig"
+        },
+        {
+          "agent_id": 0,
+          "success": true,
+          "tokens_per_sec": 3.975794612104089,
+          "ttft_ms": 7042.617321014404,
+          "output_tokens": 28,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate and work together to achieve common g"
+        },
+        {
+          "agent_id": 6,
+          "success": true,
+          "tokens_per_sec": 3.0871421458204606,
+          "ttft_ms": 8422.02877998352,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. By working collaborat"
+        },
+        {
+          "agent_id": 11,
+          "success": true,
+          "tokens_per_sec": 2.648469412983136,
+          "ttft_ms": 9816.990852355957,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. When multiple AI agen"
+        },
+        {
+          "agent_id": 8,
+          "success": true,
+          "tokens_per_sec": 2.584906304734892,
+          "ttft_ms": 11218.975305557251,
+          "output_tokens": 29,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate and work together to achieve complex "
+        },
+        {
+          "agent_id": 5,
+          "success": true,
+          "tokens_per_sec": 2.137392248467174,
+          "ttft_ms": 12632.215738296509,
+          "output_tokens": 27,
+          "response_text": "Absolutely, that's a key principle of how AI systems operate effectively. When multiple AI agents co"
+        },
+        {
+          "agent_id": 7,
+          "success": true,
+          "tokens_per_sec": 1.780758751697245,
+          "ttft_ms": 14038.959503173828,
+          "output_tokens": 25,
+          "response_text": "That's correct! Agent 7, a fictional character from the game \"The Sims,\" is an example of how AI age"
+        },
+        {
+          "agent_id": 13,
+          "success": true,
+          "tokens_per_sec": 1.5544290303232984,
+          "ttft_ms": 15439.75281715393,
+          "output_tokens": 24,
+          "response_text": "You're absolutely right! That's a key principle of many AI systems, including Agent 13 and Agent 16 "
+        },
+        {
+          "agent_id": 9,
+          "success": true,
+          "tokens_per_sec": 1.367139933215643,
+          "ttft_ms": 16823.442459106445,
+          "output_tokens": 23,
+          "response_text": "That's a great point! Agent 9/16, as the AI assistant, would indeed emphasize the collaborative natu"
+        },
+        {
+          "agent_id": 10,
+          "success": true,
+          "tokens_per_sec": 1.2621006587797308,
+          "ttft_ms": 18223.586082458496,
+          "output_tokens": 23,
+          "response_text": "That's correct! Agent 10/16 emphasizes the collaborative nature of AI agents, which is a fundamental"
+        },
+        {
+          "agent_id": 15,
+          "success": true,
+          "tokens_per_sec": 1.2749451816346642,
+          "ttft_ms": 19608.686208724976,
+          "output_tokens": 25,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. Collaboration among A"
+        },
+        {
+          "agent_id": 14,
+          "success": true,
+          "tokens_per_sec": 1.1424734794179858,
+          "ttft_ms": 21007.052183151245,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 14/16, also known as \"The AI Agent,\" is designed to collaborate with other AI "
+        },
+        {
+          "agent_id": 12,
+          "success": true,
+          "tokens_per_sec": 1.1157007997776633,
+          "ttft_ms": 22407.44113922119,
+          "output_tokens": 25,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate effectively. Collabora"
+        }
+      ]
+    },
+    "24": {
+      "concurrency_level": 24,
+      "total_agents": 24,
+      "successful_agents": 21,
+      "success_rate": 0.875,
+      "total_throughput": 60.42154371558465,
+      "avg_ttft_ms": 15647.972947075254,
+      "total_test_time": 30.022265434265137,
+      "agent_results": [
+        {
+          "agent_id": 2,
+          "success": true,
+          "tokens_per_sec": 16.058346764090963,
+          "ttft_ms": 1556.8227767944336,
+          "output_tokens": 25,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. When multiple AI agen"
+        },
+        {
+          "agent_id": 11,
+          "success": true,
+          "tokens_per_sec": 8.10613421646986,
+          "ttft_ms": 2960.7207775115967,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 11/24 is referring to the concept of multi-agent systems in artificial intelli"
+        },
+        {
+          "agent_id": 9,
+          "success": true,
+          "tokens_per_sec": 4.337861886187035,
+          "ttft_ms": 4380.038022994995,
+          "output_tokens": 19,
+          "response_text": "That's correct! Agent 9/24, a fictional character from the \"AI Agents\" series by Robert A. Heinlein,"
+        },
+        {
+          "agent_id": 6,
+          "success": true,
+          "tokens_per_sec": 4.495276970593199,
+          "ttft_ms": 5783.848285675049,
+          "output_tokens": 26,
+          "response_text": "That's correct! AI agents, whether they're designed as standalone entities or part of a larger syste"
+        },
+        {
+          "agent_id": 1,
+          "success": true,
+          "tokens_per_sec": 3.882835679665866,
+          "ttft_ms": 7211.224555969238,
+          "output_tokens": 28,
+          "response_text": "Absolutely, that's a great point! AI agents are designed to collaborate and communicate with each ot"
+        },
+        {
+          "agent_id": 7,
+          "success": true,
+          "tokens_per_sec": 2.672484971305046,
+          "ttft_ms": 8606.22239112854,
+          "output_tokens": 23,
+          "response_text": "That's correct! Agent 7/24, as part of the Agents 7 project, is designed to demonstrate how multiple"
+        },
+        {
+          "agent_id": 12,
+          "success": true,
+          "tokens_per_sec": 2.497647891186381,
+          "ttft_ms": 10009.417295455933,
+          "output_tokens": 25,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. When multiple AI agen"
+        },
+        {
+          "agent_id": 0,
+          "success": true,
+          "tokens_per_sec": 2.186872056318062,
+          "ttft_ms": 11431.85305595398,
+          "output_tokens": 25,
+          "response_text": "That's correct! Agent 0/24 is a fictional AI agent created by the company Ava Labs that demonstrates"
+        },
+        {
+          "agent_id": 14,
+          "success": true,
+          "tokens_per_sec": 1.7918260488165978,
+          "ttft_ms": 12836.06743812561,
+          "output_tokens": 23,
+          "response_text": "That's correct! Agent 14/24, also known as \"The Robot,\" is a well-known example of an AI agent that "
+        },
+        {
+          "agent_id": 3,
+          "success": true,
+          "tokens_per_sec": 1.6841623138675519,
+          "ttft_ms": 14250.407934188843,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 3/24 is referring to the concept of multi-agent systems in artificial intellig"
+        },
+        {
+          "agent_id": 4,
+          "success": true,
+          "tokens_per_sec": 1.7887337104513028,
+          "ttft_ms": 15653.531789779663,
+          "output_tokens": 28,
+          "response_text": "That's correct! Agent 4 is a team of AI agents that collaborate and communicate with each other to a"
+        },
+        {
+          "agent_id": 8,
+          "success": true,
+          "tokens_per_sec": 1.3481112389674206,
+          "ttft_ms": 17060.906648635864,
+          "output_tokens": 23,
+          "response_text": "That's correct! Agent 8, a fictional AI agent from the movie \"Terminator,\" famously states that \"AI "
+        },
+        {
+          "agent_id": 5,
+          "success": true,
+          "tokens_per_sec": 1.300345511649053,
+          "ttft_ms": 18456.6330909729,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 5/24 is referring to the concept of multi-agent systems in artificial intellig"
+        },
+        {
+          "agent_id": 21,
+          "success": true,
+          "tokens_per_sec": 1.3594693923133998,
+          "ttft_ms": 19860.689878463745,
+          "output_tokens": 27,
+          "response_text": "That's correct! AI agents, whether they're part of a single system or distributed across multiple pl"
+        },
+        {
+          "agent_id": 19,
+          "success": true,
+          "tokens_per_sec": 1.1279787606290392,
+          "ttft_ms": 21276.99637413025,
+          "output_tokens": 24,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate effectively to tackle complex challen"
+        },
+        {
+          "agent_id": 13,
+          "success": true,
+          "tokens_per_sec": 1.1898125187723505,
+          "ttft_ms": 22692.65079498291,
+          "output_tokens": 27,
+          "response_text": "That's correct! Agent 13 and Agent 24 are two AI agents that specialize in working together to achie"
+        },
+        {
+          "agent_id": 23,
+          "success": true,
+          "tokens_per_sec": 1.0377336858093062,
+          "ttft_ms": 24090.959310531616,
+          "output_tokens": 25,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate effectively. By collab"
+        },
+        {
+          "agent_id": 15,
+          "success": true,
+          "tokens_per_sec": 0.9406588277945097,
+          "ttft_ms": 25514.03260231018,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 15/24 is a humanoid robot designed to assist and collaborate with other AI age"
+        },
+        {
+          "agent_id": 17,
+          "success": true,
+          "tokens_per_sec": 0.9288070712127703,
+          "ttft_ms": 26916.24641418457,
+          "output_tokens": 25,
+          "response_text": "That's correct! Agent 17 and Agent 24 are two AI agents that collaborate effectively to achieve comp"
+        },
+        {
+          "agent_id": 20,
+          "success": true,
+          "tokens_per_sec": 0.8121531165146129,
+          "ttft_ms": 28319.782972335815,
+          "output_tokens": 23,
+          "response_text": "That's correct! Agent 20/24, a popular AI agent from the game League of Legends, is designed to work"
+        },
+        {
+          "agent_id": 18,
+          "success": true,
+          "tokens_per_sec": 0.8742910829703064,
+          "ttft_ms": 29738.37947845459,
+          "output_tokens": 26,
+          "response_text": "That's correct! AI agents, whether they're designed as standalone entities or part of a larger syste"
+        },
+        {
+          "agent_id": 10,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 16,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 22,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        }
+      ]
+    },
+    "32": {
+      "concurrency_level": 32,
+      "total_agents": 32,
+      "successful_agents": 21,
+      "success_rate": 0.65625,
+      "total_throughput": 59.09943185301528,
+      "avg_ttft_ms": 15701.2711252485,
+      "total_test_time": 30.04361128807068,
+      "agent_results": [
+        {
+          "agent_id": 7,
+          "success": true,
+          "tokens_per_sec": 13.70838030426542,
+          "ttft_ms": 1750.7538795471191,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 7/32, as an AI agent, understands the power of collaboration in achieving comp"
+        },
+        {
+          "agent_id": 0,
+          "success": true,
+          "tokens_per_sec": 7.954663298614775,
+          "ttft_ms": 3142.810583114624,
+          "output_tokens": 25,
+          "response_text": "That's a great reminder! Yes, AI agents are designed to collaborate and communicate with each other "
+        },
+        {
+          "agent_id": 5,
+          "success": true,
+          "tokens_per_sec": 5.5083557565211105,
+          "ttft_ms": 4538.559436798096,
+          "output_tokens": 25,
+          "response_text": "That's correct! Agent 5/32 is designed to collaborate with other AI agents to tackle complex challen"
+        },
+        {
+          "agent_id": 1,
+          "success": true,
+          "tokens_per_sec": 4.208590312330625,
+          "ttft_ms": 5940.2313232421875,
+          "output_tokens": 25,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. When multiple AI agen"
+        },
+        {
+          "agent_id": 4,
+          "success": true,
+          "tokens_per_sec": 3.816616286728028,
+          "ttft_ms": 7336.341381072998,
+          "output_tokens": 28,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate and work together to achieve common g"
+        },
+        {
+          "agent_id": 2,
+          "success": true,
+          "tokens_per_sec": 2.975998614990879,
+          "ttft_ms": 8736.563205718994,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. By working collaborat"
+        },
+        {
+          "agent_id": 14,
+          "success": true,
+          "tokens_per_sec": 2.4693403630055806,
+          "ttft_ms": 10124.16124343872,
+          "output_tokens": 25,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. When multiple AI agen"
+        },
+        {
+          "agent_id": 11,
+          "success": true,
+          "tokens_per_sec": 2.2580361648460614,
+          "ttft_ms": 11514.430284500122,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems operate effectively. By collaborating and shari"
+        },
+        {
+          "agent_id": 13,
+          "success": true,
+          "tokens_per_sec": 1.549096579097347,
+          "ttft_ms": 12910.75086593628,
+          "output_tokens": 20,
+          "response_text": "That's correct! Agent 13/32, as a member of the AGI (Artificial General Intelligence) team, understa"
+        },
+        {
+          "agent_id": 6,
+          "success": true,
+          "tokens_per_sec": 1.815592559440347,
+          "ttft_ms": 14320.393562316895,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. By working collaborat"
+        },
+        {
+          "agent_id": 10,
+          "success": true,
+          "tokens_per_sec": 1.6543617323700266,
+          "ttft_ms": 15716.030836105347,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. By working collaborat"
+        },
+        {
+          "agent_id": 3,
+          "success": true,
+          "tokens_per_sec": 1.4029608584925042,
+          "ttft_ms": 17106.678247451782,
+          "output_tokens": 24,
+          "response_text": "That's a great point! Agent 3/32, as an AI agent, understands the power of collaboration in achievin"
+        },
+        {
+          "agent_id": 8,
+          "success": true,
+          "tokens_per_sec": 1.4057379144421354,
+          "ttft_ms": 18495.62406539917,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate effectively. When mult"
+        },
+        {
+          "agent_id": 9,
+          "success": true,
+          "tokens_per_sec": 1.2065110630781108,
+          "ttft_ms": 19892.067909240723,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 9/32, a fictional character from the XCOM video game series, is known for her "
+        },
+        {
+          "agent_id": 16,
+          "success": true,
+          "tokens_per_sec": 1.2213716847575666,
+          "ttft_ms": 21287.541151046753,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate effectively. When mult"
+        },
+        {
+          "agent_id": 12,
+          "success": true,
+          "tokens_per_sec": 1.146353047889295,
+          "ttft_ms": 22680.6218624115,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems operate effectively in complex environments. By"
+        },
+        {
+          "agent_id": 15,
+          "success": true,
+          "tokens_per_sec": 1.0798285430546215,
+          "ttft_ms": 24077.89659500122,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate effectively. When mult"
+        },
+        {
+          "agent_id": 30,
+          "success": true,
+          "tokens_per_sec": 1.0218502437850359,
+          "ttft_ms": 25444.04149055481,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate effectively. Collabora"
+        },
+        {
+          "agent_id": 25,
+          "success": true,
+          "tokens_per_sec": 0.9309743351509382,
+          "ttft_ms": 26853.586673736572,
+          "output_tokens": 25,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. When multiple AI agen"
+        },
+        {
+          "agent_id": 31,
+          "success": true,
+          "tokens_per_sec": 0.9209951938994209,
+          "ttft_ms": 28230.331897735596,
+          "output_tokens": 26,
+          "response_text": "Absolutely, that's a key principle of how AI systems operate effectively. By collaborating and shari"
+        },
+        {
+          "agent_id": 21,
+          "success": true,
+          "tokens_per_sec": 0.8438169962554543,
+          "ttft_ms": 29627.277135849,
+          "output_tokens": 25,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. Collaboration among A"
+        },
+        {
+          "agent_id": 17,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 19,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 18,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 20,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 22,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 26,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 23,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 28,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 27,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 29,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 24,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        }
+      ]
+    },
+    "40": {
+      "concurrency_level": 40,
+      "total_agents": 40,
+      "successful_agents": 21,
+      "success_rate": 0.525,
+      "total_throughput": 61.271823546166225,
+      "avg_ttft_ms": 15540.361586071196,
+      "total_test_time": 30.0748929977417,
+      "agent_results": [
+        {
+          "agent_id": 3,
+          "success": true,
+          "tokens_per_sec": 14.933405807281703,
+          "ttft_ms": 1607.1350574493408,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 3/40 is a reference to the concept of multi-agent systems in artificial intell"
+        },
+        {
+          "agent_id": 5,
+          "success": true,
+          "tokens_per_sec": 9.297723461068802,
+          "ttft_ms": 3011.4898681640625,
+          "output_tokens": 28,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate and work together to achieve complex "
+        },
+        {
+          "agent_id": 2,
+          "success": true,
+          "tokens_per_sec": 5.647088120556404,
+          "ttft_ms": 4427.06036567688,
+          "output_tokens": 25,
+          "response_text": "That's correct! Agent 2/40 is a team of two AI agents that collaborate to achieve complex tasks and "
+        },
+        {
+          "agent_id": 7,
+          "success": true,
+          "tokens_per_sec": 4.126336701165363,
+          "ttft_ms": 5816.2970542907715,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 7/40, as part of the larger team, understands and leverages the collaborative "
+        },
+        {
+          "agent_id": 1,
+          "success": true,
+          "tokens_per_sec": 3.4689372813297097,
+          "ttft_ms": 7206.818103790283,
+          "output_tokens": 25,
+          "response_text": "Absolutely, that's a key principle of how AI systems are designed and operate. When multiple AI agen"
+        },
+        {
+          "agent_id": 6,
+          "success": true,
+          "tokens_per_sec": 2.9108870360931327,
+          "ttft_ms": 8588.447332382202,
+          "output_tokens": 25,
+          "response_text": "That's correct! Agent 6/40, like many other AI agents in the field of artificial intelligence and ro"
+        },
+        {
+          "agent_id": 0,
+          "success": true,
+          "tokens_per_sec": 2.903099668322718,
+          "ttft_ms": 9989.322900772095,
+          "output_tokens": 29,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate and work together to achieve complex "
+        },
+        {
+          "agent_id": 9,
+          "success": true,
+          "tokens_per_sec": 1.7578968494036482,
+          "ttft_ms": 11377.23183631897,
+          "output_tokens": 20,
+          "response_text": "That's correct! Agent 9/40, a fictional AI agent from the movie \"Terminator 2: Judgment Day,\" is ind"
+        },
+        {
+          "agent_id": 11,
+          "success": true,
+          "tokens_per_sec": 1.8811557034068864,
+          "ttft_ms": 12758.114576339722,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 11/40, as part of the larger system, understands and leverages the collaborati"
+        },
+        {
+          "agent_id": 13,
+          "success": true,
+          "tokens_per_sec": 1.6245402820397776,
+          "ttft_ms": 14157.851457595825,
+          "output_tokens": 23,
+          "response_text": "That's correct! Agent 13/40, also known as \"The AI Agent,\" is a well-known example of how multiple A"
+        },
+        {
+          "agent_id": 4,
+          "success": true,
+          "tokens_per_sec": 1.671098650410274,
+          "ttft_ms": 15558.626651763916,
+          "output_tokens": 26,
+          "response_text": "That's correct! Agent 4/40 is a team of four AI agents that collaborate to tackle complex tasks and "
+        },
+        {
+          "agent_id": 8,
+          "success": true,
+          "tokens_per_sec": 1.416531649559293,
+          "ttft_ms": 16942.791223526,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 8/40 is a fictional character from the game \"AI Agent,\" which is based on the "
+        },
+        {
+          "agent_id": 12,
+          "success": true,
+          "tokens_per_sec": 1.3640382252168672,
+          "ttft_ms": 18327.932119369507,
+          "output_tokens": 25,
+          "response_text": "That's correct! Agent 12/40, as part of the larger team of AI agents, understands that collaboration"
+        },
+        {
+          "agent_id": 10,
+          "success": true,
+          "tokens_per_sec": 1.3695391215328352,
+          "ttft_ms": 19714.661359786987,
+          "output_tokens": 27,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate and work together to tackle complex c"
+        },
+        {
+          "agent_id": 39,
+          "success": true,
+          "tokens_per_sec": 1.1875186644075284,
+          "ttft_ms": 21052.300691604614,
+          "output_tokens": 25,
+          "response_text": "That's correct! Agent 39 and Agent 40 are two AI agents that collaborate to achieve complex tasks by"
+        },
+        {
+          "agent_id": 17,
+          "success": true,
+          "tokens_per_sec": 1.15671395067389,
+          "ttft_ms": 22477.46729850769,
+          "output_tokens": 26,
+          "response_text": "That's a great point! Agent 17, also known as \"The Architect,\" is designed to collaborate with other"
+        },
+        {
+          "agent_id": 16,
+          "success": true,
+          "tokens_per_sec": 1.0472914760587844,
+          "ttft_ms": 23871.100425720215,
+          "output_tokens": 25,
+          "response_text": "That's correct! Agent 16/40, as part of the larger team of AI agents, understands that collaboration"
+        },
+        {
+          "agent_id": 14,
+          "success": true,
+          "tokens_per_sec": 0.8708641058566623,
+          "ttft_ms": 25262.2652053833,
+          "output_tokens": 22,
+          "response_text": "That's correct! Agent 14/40, a fictional AI agent from the movie \"Her,\" embodies the concept of coll"
+        },
+        {
+          "agent_id": 18,
+          "success": true,
+          "tokens_per_sec": 0.8254405326834675,
+          "ttft_ms": 26652.434825897217,
+          "output_tokens": 22,
+          "response_text": "That's correct! Agent 18/40 is a fictional character from the game \"AI Dungeon,\" which showcases the"
+        },
+        {
+          "agent_id": 22,
+          "success": true,
+          "tokens_per_sec": 0.9977316232063582,
+          "ttft_ms": 28063.658952713013,
+          "output_tokens": 28,
+          "response_text": "That's a great reminder! Yes, AI agents can indeed collaborate and work together to achieve complex "
+        },
+        {
+          "agent_id": 15,
+          "success": true,
+          "tokens_per_sec": 0.8139846358921169,
+          "ttft_ms": 29484.586000442505,
+          "output_tokens": 24,
+          "response_text": "That's correct! Agent 15/40 is a reference to the concept of multi-agent systems in artificial intel"
+        },
+        {
+          "agent_id": 25,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 19,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 21,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 20,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 23,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 26,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 24,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 29,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 30,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 28,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 27,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 32,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 31,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 35,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 36,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 38,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 34,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 37,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        },
+        {
+          "agent_id": 33,
+          "success": false,
+          "error": "HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=30)",
+          "tokens_per_sec": 0,
+          "ttft_ms": 0
+        }
+      ]
+    }
+  },
+  "max_stable_concurrency": 24,
+  "optimal_concurrency": 24,
+  "peak_total_throughput": 60.909116815465715,
+  "throughput_per_agent": 2.5378798673110716,
+  "resource_efficiency": 2.5378798673110716
+}

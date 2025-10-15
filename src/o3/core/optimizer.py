@@ -320,7 +320,7 @@ class OllamaOptimizer:
 
     def load_ai_config(self) -> Dict:
         """Load AI-first configuration from o3_ai_config.yaml"""
-        config_path = Path("o3_ai_config.yaml")
+        config_path = Path("config/o3_ai_config.yaml")
         if not config_path.exists():
             # Fallback to defaults if AI config not found
             print("Warning: o3_ai_config.yaml not found, using fallback defaults")
