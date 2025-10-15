@@ -340,8 +340,23 @@ class OllamaOptimizer:
             }
 
         try:
-            with open(config_path, 'r') as f:
+            # Try UTF-8 first
+            with open(config_path, 'r', encoding='utf-8') as f:
                 return yaml.safe_load(f)
+        except UnicodeDecodeError:
+            try:
+                # Fallback to Latin-1 for Windows compatibility
+                with open(config_path, 'r', encoding='latin-1') as f:
+                    return yaml.safe_load(f)
+            except Exception as e:
+                print(f"⚠️  Failed to load AI config with Latin-1 encoding: {e}")
+                try:
+                    # Last fallback - let Python decide encoding
+                    with open(config_path, 'r', errors='ignore') as f:
+                        return yaml.safe_load(f)
+                except Exception as e2:
+                    print(f"⚠️  Failed to load AI config with fallback: {e2}, using empty defaults")
+                    return {}
         except Exception as e:
             print(f"⚠️  Failed to load AI config: {e}, using defaults")
             return {}  # Fallback values will be used
