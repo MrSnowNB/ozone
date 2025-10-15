@@ -11,8 +11,8 @@ presets:
     num_thread: 16
     performance:
       stability_score: 0.85
-      tokens_per_sec: 10.198228042446042
-      ttft_ms: 5295.037508010864
+      tokens_per_sec: 6.0756210800369574
+      ttft_ms: 8887.980222702026
     temperature: 0.2
     top_p: 0.95
     use_case: Typical agentic interactions, moderate tool usage, balanced performance
@@ -26,8 +26,8 @@ presets:
     num_thread: 16
     performance:
       stability_score: 0.85
-      tokens_per_sec: 10.198228042446042
-      ttft_ms: 5295.037508010864
+      tokens_per_sec: 6.0756210800369574
+      ttft_ms: 8887.980222702026
     temperature: 0.2
     top_p: 0.95
     use_case: Quick commands, real-time interactions, high-frequency tool calls
@@ -35,15 +35,14 @@ presets:
     batch: 32
     description: For long conversations, document analysis, complex reasoning
     f16_kv: true
-    num_ctx: 131072
+    num_ctx: 81920
     num_predict: 512
     num_thread: 16
     performance:
       stability_score: 0.85
-      tokens_per_sec: 5.553072985930444
-      ttft_ms: 9724.345445632935
+      tokens_per_sec: 3.6744458506768116
+      ttft_ms: 14696.093559265137
     temperature: 0.2
     top_p: 0.95
-    use_case: Ultra-long conversations, massive document analysis, complex multi-agent
-      workflows
-updated_at: '2025-10-14T21:15:13.143516'
+    use_case: Long-form reasoning, extensive tool traces, complex code generation
+updated_at: '2025-10-14T21:41:46.565053'

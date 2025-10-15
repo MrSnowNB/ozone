@@ -113,7 +113,7 @@ class OllamaOptimizer:
         """Get model digest/hash"""
         try:
             result = subprocess.run(
-                ["ollama", "show", model, "--modelfile"], 
+                ["ollama", "show", model, "--modelfile"],
                 capture_output=True, text=True, check=True
             )
             # Extract digest from modelfile output
@@ -350,6 +350,7 @@ class OllamaOptimizer:
                     return yaml.safe_load(f)
             except Exception as e:
                 print(f"⚠️  Failed to load AI config with Latin-1 encoding: {e}")
+                print(f"    Trying fallback...")
                 try:
                     # Last fallback - let Python decide encoding
                     with open(config_path, 'r', errors='ignore') as f:
@@ -416,8 +417,12 @@ class OllamaOptimizer:
         for preset_name, preset_config in preset_categories.items():
             target_range = target_ranges.get(preset_name, (4096, 65536))
 
-            # Perform binary search within target range
+            # Perform binary search within target range - push to limits
             low, high = target_range
+            if "256k" in preset_name:
+                # Force 256k context testing
+                low = 131072  # Start from 128k
+                high = 262144  # Go to 256k
             iterations = 0
             selected_contexts = []
 
@@ -573,7 +578,7 @@ class OllamaOptimizer:
         # Legacy fallback
         return self.legacy_generate_configs(model)
 
-    def test_model(self, model: str, concurrency_levels: List[int] = [1, 2]) -> List[TestResult]:
+    def test_model(self, model: str, concurrency_levels: List[int] = [1, 2, 4]) -> List[TestResult]:
         """Test a single model with all configurations"""
         print(f"\n=== Testing {model} ===")
 
@@ -741,7 +746,7 @@ class OllamaOptimizer:
         summary = {
             "model": model,
             "timestamp": timestamp,
-            "optimization_type": "AI-First Binary Search",
+            "optimization_type": "AI-First Extreme Context",
             "total_tests": len(results),
             "successful_tests": len(successful_results),
             "ai_config_used": bool(ai_config),
@@ -780,11 +785,8 @@ class OllamaOptimizer:
             "presets": {}
         }
 
-        # Convert preset results to defaults format
+        # Add preset details
         for preset_name, result in preset_results.items():
-            description = preset_categories[preset_name].get("description", preset_name)
-            stability = self._calculate_stability_score(result, ai_config)
-
             defaults["presets"][preset_name] = {
                 "num_ctx": result.config.num_ctx,
                 "batch": result.config.batch,
@@ -796,9 +798,9 @@ class OllamaOptimizer:
                 "performance": {
                     "tokens_per_sec": result.tokens_per_sec,
                     "ttft_ms": result.ttft_ms,
-                    "stability_score": stability
+                    "stability_score": self._calculate_stability_score(result, ai_config)
                 },
-                "description": description,
+                "description": self._get_use_case_recommendation(preset_name, result.config.num_ctx),
                 "use_case": self._get_use_case_recommendation(preset_name, result.config.num_ctx)
             }
 
@@ -906,3 +908,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+</content>

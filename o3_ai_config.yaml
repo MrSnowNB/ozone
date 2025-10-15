@@ -27,8 +27,8 @@ ai_guidance:
 search_strategy:
   # Binary search for context discovery (logarithmic vs linear)
   context_discovery: binary_search
-  # Agentic coding targeted: 128k context for maximum code analysis capability
-  initial_context_probe: 131072   # 128k tokens - optimal for agentic coding workflows
+  # Extreme context target: 256k context for massive codebase analysis capability
+  initial_context_probe: 262144   # 256k tokens - pursuing AMD AI accelerator limits
   # How much to expand/contract on success/failure
   binary_search_factor: 1.3     # Conservative scaling for stability
   # Maximum iterations before declaring max context
