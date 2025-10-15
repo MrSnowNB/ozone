@@ -323,7 +323,7 @@ class OllamaOptimizer:
         config_path = Path("o3_ai_config.yaml")
         if not config_path.exists():
             # Fallback to defaults if AI config not found
-            print("⚠️  o3_ai_config.yaml not found, using fallback defaults")
+            print("Warning: o3_ai_config.yaml not found, using fallback defaults")
             return {
                 "search_strategy": {
                     "initial_context_probe": 16384,
@@ -349,22 +349,22 @@ class OllamaOptimizer:
                 with open(config_path, 'r', encoding='latin-1') as f:
                     return yaml.safe_load(f)
             except Exception as e:
-                print(f"⚠️  Failed to load AI config with Latin-1 encoding: {e}")
+                print(f"Warning: Failed to load AI config with Latin-1 encoding: {e}")
                 print(f"    Trying fallback...")
                 try:
                     # Last fallback - let Python decide encoding
                     with open(config_path, 'r', errors='ignore') as f:
                         return yaml.safe_load(f)
                 except Exception as e2:
-                    print(f"⚠️  Failed to load AI config with fallback: {e2}, using empty defaults")
+                    print(f"Warning: Failed to load AI config with fallback: {e2}, using empty defaults")
                     return {}
         except Exception as e:
-            print(f"⚠️  Failed to load AI config: {e}, using defaults")
+            print(f"Warning: Failed to load AI config: {e}, using defaults")
             return {}  # Fallback values will be used
 
     def binary_search_context(self, model: str, ai_config: Dict) -> List[TestConfig]:
         """Generate configurations using binary search for context discovery"""
-        print(f"🔍 AI-First: Starting binary search for {model} context discovery")
+        print(f"[AI-First] Starting binary search for {model} context discovery")
 
         # Get agentic focus categories from AI config
         preset_categories = ai_config.get("preset_categories", {})
@@ -412,7 +412,7 @@ class OllamaOptimizer:
         configs = []
         num_thread = psutil.cpu_count(logical=False) or 8
 
-        print(f"🎯 Model {model}: Detected as {model_size}, starting batch size: {initial_batch}")
+        print(f"{model}: Detected as {model_size}, starting batch size: {initial_batch}")
 
         for preset_name, preset_config in preset_categories.items():
             target_range = target_ranges.get(preset_name, (4096, 65536))
@@ -572,7 +572,7 @@ class OllamaOptimizer:
             try:
                 return self.binary_search_context(model, ai_config)
             except Exception as e:
-                print(f"⚠️  AI-First optimization failed for {model}: {e}")
+                print(f"Warning: AI-First optimization failed for {model}: {e}")
                 print("   Falling back to legacy configuration generation")
 
         # Legacy fallback
@@ -650,7 +650,7 @@ class OllamaOptimizer:
         # Generate AI-first summary with preset categories
         successful_results = [r for r in results if r.success]
         if not successful_results:
-            print(f"⚠️  No successful tests for {model}")
+            print(f"Warning: No successful tests for {model}")
             return
 
         print(f"🎯 AI-First: Analyzing {len(successful_results)} successful results for {model}")
@@ -859,6 +859,8 @@ def main():
                        help="Enable AI-first mode with binary search optimization")
     parser.add_argument("--legacy-mode", action="store_true",
                        help="Use legacy linear search mode")
+    parser.add_argument("--single-test-256k", action="store_true",
+                       help="Test single configuration locked to 256k context for maximum capability")
 
     args = parser.parse_args()
 
@@ -890,22 +892,85 @@ def main():
     print(f"Physical CPU cores: {env_info['cpu_info']['cores_physical']}")
     print(f"Total RAM: {env_info['memory']['total_ram_gb']} GB")
 
-    # Test each model
-    for model in args.models:
-        try:
-            results = optimizer.test_model(model, args.concurrency)
-            if results:
-                optimizer.save_results(model, results)
-        except KeyboardInterrupt:
-            print(f"\nInterrupted during {model} testing")
-            break
-        except Exception as e:
-            print(f"Error testing {model}: {e}")
-            continue
+    # Handle single test locked to 256k context
+    if args.single_test_256k and len(args.models) == 1:
+        model = args.models[0]
+        print(f"\n🔒 SINGLE TEST: Locked to 256k context - {model}")
+        print("="*60)
+
+        # Create single test config locked to 256k
+        test_config = TestConfig(
+            model=model,
+            num_ctx=262144,  # 256k context locked
+            batch=8,  # Conservative batch for max compatibility
+            num_predict=512,
+            num_thread=psutil.cpu_count(logical=False) or 8,
+            f16_kv=True,
+            temperature=0.2,
+            top_p=0.95,
+            seed=42
+        )
+
+        optimizer = OllamaOptimizer(args.output_dir)
+
+        # Capture environment
+        env_info = optimizer.capture_environment()
+        env_file = optimizer.output_dir / "env" / f"env_256k_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        env_file.parent.mkdir(exist_ok=True)
+
+        with open(env_file, 'w') as f:
+            json.dump(env_info, f, indent=2)
+
+        print(f"O3 (Ozone) - 256K CONTEXT SINGLE TEST")
+        print(f"Hardware: {env_info['cpu_info']['cores_physical']} CPU cores, {env_info['memory']['total_ram_gb']}GB RAM")
+        print(f"GPU: {optimizer.monitor.gpu_type}")
+        print(f"Model: {model}")
+        print(f"Context: 256k tokens")
+        print(f"Expected timeout: ~{30 + (262144 / 1000 * 2) + (512 / 100):.0f}s")
+
+        # Warmup first
+        print(f"\n🔥 Warming up {model}...")
+        if not optimizer.warmup_model(model):
+            print(f"❌ Warmup failed - aborting 256k test")
+            sys.exit(1)
+
+        # Single 256k test
+        print(f"\n🚀 Testing 256K Context Configuration...")
+        run_id = f"{model}_256k_single_test"
+        result = optimizer.run_single_test(test_config, run_id, 1, 0)
+
+        results = [result]
+
+        # Save result
+        optimizer.save_results(model, results)
+
+        if result.success:
+            print(f"\n✅ SUCCESS: 256K Context Test Complete")
+            print(f"Performance: {result.tokens_per_sec:.2f} tok/s, TTFT: {result.ttft_ms:.0f}ms")
+            if result.vram_after_mb:
+                print(f"VRAM Peak: {result.vram_after_mb}MB")
+            print(f"Result saved to: {optimizer.output_dir}")
+        else:
+            print(f"\n❌ FAILED: {result.error}")
+            print("256k context may exceed hardware limits or model capabilities")
+
+    # Original multi-model testing
+    else:
+        # Test each model
+        for model in args.models:
+            try:
+                results = optimizer.test_model(model, args.concurrency)
+                if results:
+                    optimizer.save_results(model, results)
+            except KeyboardInterrupt:
+                print(f"\nInterrupted during {model} testing")
+                break
+            except Exception as e:
+                print(f"Error testing {model}: {e}")
+                continue
 
     print(f"\nO3 testing complete. Results in: {optimizer.output_dir}")
 
 
 if __name__ == "__main__":
     main()
-</content>

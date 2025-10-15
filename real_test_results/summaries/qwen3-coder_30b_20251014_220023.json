@@ -1,0 +1,40 @@
+{
+  "model": "qwen3-coder:30b",
+  "timestamp": "20251014_220023",
+  "optimization_type": "AI-First Extreme Context",
+  "total_tests": 15,
+  "successful_tests": 15,
+  "ai_config_used": true,
+  "presets": {
+    "max_context": {
+      "description": "For long conversations, document analysis, complex reasoning",
+      "num_ctx": 81920,
+      "batch": 32,
+      "f16_kv": true,
+      "num_predict": 512,
+      "tokens_per_sec": 5.903180223949918,
+      "ttft_ms": 9147.611618041992,
+      "stability_score": 0.85
+    },
+    "balanced": {
+      "description": "For tool-using agents, code generation, moderate context needs",
+      "num_ctx": 18432,
+      "batch": 16,
+      "f16_kv": true,
+      "num_predict": 512,
+      "tokens_per_sec": 10.303548893068372,
+      "ttft_ms": 5240.912675857544,
+      "stability_score": 0.85
+    },
+    "fast_response": {
+      "description": "For quick commands, simple queries, high-frequency interactions",
+      "num_ctx": 18432,
+      "batch": 16,
+      "f16_kv": true,
+      "num_predict": 512,
+      "tokens_per_sec": 10.303548893068372,
+      "ttft_ms": 5240.912675857544,
+      "stability_score": 0.85
+    }
+  }
+}
