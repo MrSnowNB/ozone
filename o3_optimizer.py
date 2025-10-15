@@ -129,8 +129,8 @@ class OllamaOptimizer:
     def warmup_model(self, model: str) -> bool:
         """Warmup model using API with safeguards against infinite responses"""
         print(f"  Warming up {model}...")
+        import requests  # Import here as not always available
         try:
-            import requests  # Import here as not always available
 
             # Use API with very constrained parameters
             api_data = {
