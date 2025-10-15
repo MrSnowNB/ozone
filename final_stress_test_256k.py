@@ -15,24 +15,41 @@ import argparse
 class FinalStressTest256k:
     """Final stress test for 256K context with 32-thread maximum utilization"""
 
-    def __init__(self, output_dir="final_stress_test_256k", model="qwen3-coder:30b"):
+    def __init__(self, output_dir="final_stress_test_256k", model="qwen3-coder:30b", agentic_mode=False):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
+        self.agentic_mode = agentic_mode
 
         self.model = model
         self.base_url = "http://localhost:11434/api/generate"
 
-        # AUTHENTIC CONFIGURATION - Matching historical 256K tests (batch=8, no temp override)
-        self.config = {
-            "model": model,
-            "options": {
-                "num_ctx": 262144,    # FIXED 256K benchmark target
-                "batch": 8,           # AUTHENTIC: Matching historical batch=8 configuration
-                "num_predict": 512,   # Higher for sustained generation
-                "num_thread": "AUTO", # AUTHENTIC: Use Ollama defaults (not hardcoded)
-                "f16_kv": True        # Memory efficient - matches historical
+        # AGENTIC CODING CONFIGURATION - Optimized for interactive agent workflows
+        if agentic_mode:
+            self.config = {
+                "model": model,
+                "options": {
+                    "num_ctx": 131072,       # FIXED 128K context for code understanding
+                    "batch": 32,             # Higher batch for parallel processing efficiency
+                    "num_predict": 2048,     # MUCH LONGER responses for complete implementations
+                    "num_thread": 32,        # ALL threads including logical cores for speed
+                    "temperature": 0.7,      # CREATIVE temperature for innovative problem solving
+                    "f16_kv": True,          # Memory efficient
+                    "top_k": 40,             # Diversity in token selection
+                    "top_p": 0.9             # Nucleus sampling for creative responses
+                }
             }
-        }
+        else:
+            # AUTHENTIC CONFIGURATION - Matching historical 256K tests (batch=8, no temp override)
+            self.config = {
+                "model": model,
+                "options": {
+                    "num_ctx": 262144,     # FIXED 256K benchmark target
+                    "batch": 8,            # AUTHENTIC: Matching historical batch=8 configuration
+                    "num_predict": 512,    # Higher for sustained generation
+                    "num_thread": "AUTO",  # AUTHENTIC: Use Ollama defaults (not hardcoded)
+                    "f16_kv": True         # Memory efficient - matches historical
+                }
+            }
 
         self.results = {
             "test_metadata": {
@@ -643,41 +660,44 @@ class MultiModelStressTest:
 
         self.results = {}
 
-    def run_model_stress_test(self, model_name, config):
+    def run_model_stress_test(self, model_name, config=None, agentic_mode=False, context_override=None):
         """Run stress test for a specific model"""
-        print(f"\n🧪🧪🧪 STRESS TESTING: {model_name.upper()} @ {config['context_limit']/1024:.0f}K CONTEXT 🧪🧪🧪")
+        print(f"\n🧪🧪🧪 STRESS TESTING: {model_name.upper()}")
+        if agentic_mode:
+            print("⚡ AGENTIC MODE: Optimized for interactive tool-using workflows")
+        if context_override:
+            print(f"📏 CONTEXT OVERRIDE: {context_override} tokens")
+        print("🧪🧪🧪")
 
-        # Create customized stress test for this model
-        class CustomStressTest(FinalStressTest256k):
-            def __init__(self, model, context_limit, threads, batch, temp, output_dir):
-                super().__init__(output_dir=output_dir, model=model)
-                # Override config with model-specific settings
-                self.config["options"].update({
-                    "num_ctx": context_limit,
-                    "num_thread": threads,
-                    "batch": batch,
-                    "temperature": temp
-                })
+        # Default config if none provided
+        if config is None:
+            config = {"context_limit": 131072, "threads": 16, "batch": 8, "temperature": 0.7 if agentic_mode else 0.1}
+            if context_override:
+                config["context_limit"] = context_override
 
-                # Adjust codebase size based on context limit
-                if context_limit <= 32768:  # 32K models get smaller context
-                    self.codebase = self.codebase[:15000] + "\n# Compact Django model subset for 32K testing"
-                elif context_limit <= 65536:  # 64K models get medium context
-                    self.codebase = self.codebase[:30000] + "\n# Medium Django codebase for 64K testing"
-                # 256K keeps full context
+        # Determine context size display
+        display_context = config["context_limit"] / 1024
+        print(f"@ {display_context:.0f}K CONTEXT ({config['context_limit']} tokens)")
 
         # FIX: Sanitize output directory name to handle Windows path restrictions
         safe_model_name = model_name.replace(':', '_').replace('.', '_').replace('/', '_').replace('-', '_')
         output_dir = f"stress_test_{safe_model_name}"
-        stress_test = CustomStressTest(model_name, config["context_limit"], config["threads"], config["batch"], config["temperature"], output_dir)
+        stress_test = FinalStressTest256k(
+            output_dir=output_dir,
+            model=model_name,
+            agentic_mode=agentic_mode
+        )
+
+        # Override context if specified
+        stress_test.config["options"]["num_ctx"] = config["context_limit"]
 
         try:
             stress_test.run_final_stress_test()
             self.results[model_name] = stress_test.results
-            return True
+            return stress_test.results
         except Exception as e:
             print(f"❌ STRESS TEST FAILED FOR {model_name}: {e}")
-            return False
+            return None
 
     def generate_comparison_report(self):
         """Generate comprehensive model comparison report"""
@@ -872,29 +892,16 @@ def main():
     parser = argparse.ArgumentParser(description="O3 Multi-Model Stress Test Comparison")
     parser.add_argument("--single-model", help="Test only a specific model")
     parser.add_argument("--context-override", type=int, help="Override context size for single model test (tokens)")
+    parser.add_argument("--agentic-mode", action="store_true", help="Use agentic coding settings (creative, fast, interactive)")
     parser.add_argument("--no-comparison", action="store_true", help="Disable comparison report generation")
 
     args = parser.parse_args()
 
     if args.single_model:
-        # Single model test
-        config = MultiModelStressTest().models_config.get(args.single_model)
-        if not config:
-            print(f"❌ Model {args.single_model} not found in configuration")
-            # Allow context override for testing different sizes
-            if args.context_override:
-                config = {
-                    "context_limit": args.context_override,
-                    "threads": 16,
-                    "batch": 8,
-                    "temperature": 0.1
-                }
-                print(f"📏 Using context override: {args.context_override} tokens")
-            else:
-                return
-
+        # Single model test with agentic mode support
+        print(f"⚡ AGENTIC MODE ENABLED: {args.agentic_mode}" if args.agentic_mode else "📊 BENCHMARK MODE")
         tester = MultiModelStressTest()
-        tester.run_model_stress_test(args.single_model, config)
+        tester.run_model_stress_test(args.single_model, None, agentic_mode=args.agentic_mode)
     else:
         # Multi-model comparison
         tester = MultiModelStressTest()
