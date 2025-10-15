@@ -1,0 +1,157 @@
+{
+  "scripts_validated": [
+    "ctx_64k_gemma3_tools_27b.py",
+    "ctx_128k_gemma3_tools_27b.py",
+    "ctx_64k_liquid_rag.py",
+    "ctx_32k_chat_models.py"
+  ],
+  "validation_results": {
+    "ctx_64k_gemma3_tools_27b.py": {
+      "script_name": "ctx_64k_gemma3_tools_27b.py",
+      "syntax_check": {
+        "passed": true,
+        "error": null
+      },
+      "import_check": {
+        "passed": true,
+        "error": null
+      },
+      "config_validation": {
+        "passed": false,
+        "error": "Could not find testable class"
+      },
+      "hardware_monitoring": {
+        "passed": true,
+        "error": null
+      },
+      "directory_structure": {
+        "passed": false,
+        "error": "Could not find class with directory setup"
+      },
+      "class_initialization": {
+        "passed": false,
+        "error": "Could not find testable class"
+      },
+      "overall_passed": true,
+      "issues_found": []
+    },
+    "ctx_128k_gemma3_tools_27b.py": {
+      "script_name": "ctx_128k_gemma3_tools_27b.py",
+      "syntax_check": {
+        "passed": true,
+        "error": null
+      },
+      "import_check": {
+        "passed": true,
+        "error": null
+      },
+      "config_validation": {
+        "passed": false,
+        "error": "Could not find testable class"
+      },
+      "hardware_monitoring": {
+        "passed": true,
+        "error": null
+      },
+      "directory_structure": {
+        "passed": false,
+        "error": "Could not find class with directory setup"
+      },
+      "class_initialization": {
+        "passed": false,
+        "error": "Could not find testable class"
+      },
+      "overall_passed": true,
+      "issues_found": []
+    },
+    "ctx_64k_liquid_rag.py": {
+      "script_name": "ctx_64k_liquid_rag.py",
+      "syntax_check": {
+        "passed": true,
+        "error": null
+      },
+      "import_check": {
+        "passed": true,
+        "error": null
+      },
+      "config_validation": {
+        "passed": false,
+        "error": "Could not find testable class"
+      },
+      "hardware_monitoring": {
+        "passed": true,
+        "error": null
+      },
+      "directory_structure": {
+        "passed": false,
+        "error": "Could not find class with directory setup"
+      },
+      "class_initialization": {
+        "passed": false,
+        "error": "Could not find testable class"
+      },
+      "overall_passed": true,
+      "issues_found": []
+    },
+    "ctx_32k_chat_models.py": {
+      "script_name": "ctx_32k_chat_models.py",
+      "syntax_check": {
+        "passed": true,
+        "error": null
+      },
+      "import_check": {
+        "passed": true,
+        "error": null
+      },
+      "config_validation": {
+        "passed": false,
+        "error": "Could not find testable class"
+      },
+      "hardware_monitoring": {
+        "passed": true,
+        "error": null
+      },
+      "directory_structure": {
+        "passed": false,
+        "error": "Could not find class with directory setup"
+      },
+      "class_initialization": {
+        "passed": false,
+        "error": "Could not find testable class"
+      },
+      "overall_passed": true,
+      "issues_found": []
+    }
+  },
+  "summary": {
+    "total_scripts": 4,
+    "passed_syntax": 4,
+    "passed_imports": 4,
+    "passed_config": 0,
+    "passed_hardware": 4,
+    "passed_structure": 0,
+    "failed_overall": 0
+  },
+  "integration_tests": {
+    "ollama_connectivity": {
+      "passed": true,
+      "status": "Connected",
+      "details": "Ollama service responding"
+    },
+    "model_availability": {
+      "passed": true,
+      "status": "All Available",
+      "details": "Found 4 required models"
+    },
+    "disk_space": {
+      "passed": false,
+      "status": "Check Failed",
+      "details": "module 'os' has no attribute 'statvfs'"
+    },
+    "all_scripts_executable": {
+      "passed": false,
+      "status": "4 Failed",
+      "details": "0 OK, 4 failed"
+    }
+  }
+}
