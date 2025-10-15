@@ -110,19 +110,19 @@ O3 includes optimized test grids for common models:
 - **Models:** `qwen3-coder:30b`, `orieg/gemma3-tools:27b-it-qat`
 - **Focus:** Maximum context for complex code generation
 - **Batch Sizes:** 8, 16 (VRAM conscious)
-- **Context Range:** 4096 → 32768 tokens
+- **Context Range:** 4096 → 131,072 tokens (AMD Ryzen AI validation: 128k achieved)
 
 ### RAG Models  
 - **Models:** `liquid-rag:latest`
 - **Focus:** Fast retrieval and response generation
 - **Batch Sizes:** 16, 32
-- **Context Range:** 8192 → 32768 tokens
+- **Context Range:** 8192 → 131,072 tokens (AMD Ryzen AI validation: 128k achieved)
 
 ### Chat/Instruct Models (3B-8B)
 - **Models:** `qwen2.5:3b-instruct`, `gemma3:latest`
 - **Focus:** Balanced performance and context
 - **Batch Sizes:** 16, 32
-- **Context Range:** 4096 → 32768 tokens
+- **Context Range:** 4096 → 131,072 tokens (AMD Ryzen AI validation: 128k achieved)
 
 ## 🔧 Advanced Usage
 
