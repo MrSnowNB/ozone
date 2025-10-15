@@ -518,7 +518,7 @@ class OllamaOptimizer:
         }
 
         config_params = model_configs.get(model, default_config)
-        num_thread = psutil.cpu_count(logical=False) or 8  # Physical cores
+        num_thread = psutil.cpu_count(logical=False) or 8  # Physical cores (optimal)
 
         configs = []
 
@@ -904,7 +904,7 @@ def main():
             num_ctx=262144,  # 256k context locked
             batch=8,  # Conservative batch for max compatibility
             num_predict=512,
-            num_thread=psutil.cpu_count(logical=False) or 8,
+            num_thread=psutil.cpu_count(logical=False) or 8,  # Fixed: Use physical cores only
             f16_kv=True,
             temperature=0.2,
             top_p=0.95,

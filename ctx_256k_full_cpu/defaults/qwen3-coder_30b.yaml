@@ -1,0 +1,51 @@
+hardware_target: HP Strix AMD GPUs (64GB+ VRAM)
+model: qwen3-coder:30b
+optimization_type: AI-First Extreme Context
+presets:
+  balanced:
+    batch: 8
+    description: Typical agentic interactions, moderate tool usage, balanced performance
+      needs
+    f16_kv: true
+    num_ctx: 262144
+    num_predict: 512
+    num_thread: 32
+    performance:
+      stability_score: 0.85
+      tokens_per_sec: 4.037874210711782
+      ttft_ms: 13373.37350845337
+    temperature: 0.2
+    top_p: 0.95
+    use_case: Typical agentic interactions, moderate tool usage, balanced performance
+      needs
+  fast_response:
+    batch: 8
+    description: Quick commands, real-time interactions, high-frequency tool calls
+    f16_kv: true
+    num_ctx: 262144
+    num_predict: 512
+    num_thread: 32
+    performance:
+      stability_score: 0.85
+      tokens_per_sec: 4.037874210711782
+      ttft_ms: 13373.37350845337
+    temperature: 0.2
+    top_p: 0.95
+    use_case: Quick commands, real-time interactions, high-frequency tool calls
+  max_context:
+    batch: 8
+    description: Ultra-long conversations, massive document analysis, complex multi-agent
+      workflows
+    f16_kv: true
+    num_ctx: 262144
+    num_predict: 512
+    num_thread: 32
+    performance:
+      stability_score: 0.85
+      tokens_per_sec: 4.037874210711782
+      ttft_ms: 13373.37350845337
+    temperature: 0.2
+    top_p: 0.95
+    use_case: Ultra-long conversations, massive document analysis, complex multi-agent
+      workflows
+updated_at: '2025-10-14T22:09:50.735527'
