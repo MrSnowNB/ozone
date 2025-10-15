@@ -1,0 +1,11 @@
+Phase,Query,Success,Response_Time_s,Tokens_Generated,Chars_Generated,Tokens_per_sec,RAM_MB,CPU_Percent
+Architectural Analysis,0,True,10.28,481,2656,46.81,0,0.0
+Architectural Analysis,1,True,0.73,462,2134,635.57,0,0.0
+Architectural Analysis,2,True,0.66,460,2480,700.53,0,0.0
+Architectural Analysis,0,True,0.62,487,2916,787.66,0,0.0
+Complex Refactoring,0,True,6.11,465,1987,76.10,0,0.0
+Complex Refactoring,1,True,0.78,450,2311,575.17,0,0.0
+Complex Refactoring,0,True,0.69,465,2625,675.25,0,0.0
+Complex Refactoring,1,True,0.72,450,2311,625.06,0,0.0
+System Design,0,True,6.03,479,2273,79.46,0,0.0
+System Design,1,True,0.80,427,2164,533.01,0,0.0

@@ -1,0 +1,95 @@
+{
+  "validation_timestamp": "2025-10-15T10:22:10.830618",
+  "models_validated": [
+    {
+      "model": "orieg/gemma3-tools:27b-it-qat",
+      "category": "large_coding",
+      "connectivity_test": {
+        "passed": true,
+        "response_time": 0.33161091804504395,
+        "tokens_generated": 1,
+        "response_preview": "OK"
+      },
+      "context_tests": {
+        "65536": {
+          "passed": true,
+          "context_loaded_mb": 0.005253791809082031,
+          "response_time": 29.545849800109863,
+          "tokens_generated": 96
+        }
+      },
+      "overall_ready": true,
+      "issues": []
+    },
+    {
+      "model": "liquid-rag:latest",
+      "category": "rag",
+      "connectivity_test": {
+        "passed": true,
+        "response_time": 0.05417037010192871,
+        "tokens_generated": 3,
+        "response_preview": "Okay, here"
+      },
+      "context_tests": {
+        "65536": {
+          "passed": true,
+          "context_loaded_mb": 0.005253791809082031,
+          "response_time": 1.4929394721984863,
+          "tokens_generated": 96
+        }
+      },
+      "overall_ready": true,
+      "issues": []
+    },
+    {
+      "model": "qwen2.5:3b-instruct",
+      "category": "chat",
+      "connectivity_test": {
+        "passed": true,
+        "response_time": 0.0351712703704834,
+        "tokens_generated": 1,
+        "response_preview": "OK"
+      },
+      "context_tests": {
+        "32768": {
+          "passed": true,
+          "context_loaded_mb": 0.0008869171142578125,
+          "response_time": 3.457833766937256,
+          "tokens_generated": 94
+        }
+      },
+      "overall_ready": true,
+      "issues": []
+    },
+    {
+      "model": "gemma3:latest",
+      "category": "chat",
+      "connectivity_test": {
+        "passed": true,
+        "response_time": 0.08330917358398438,
+        "tokens_generated": 1,
+        "response_preview": "OK"
+      },
+      "context_tests": {
+        "32768": {
+          "passed": true,
+          "context_loaded_mb": 0.0008869171142578125,
+          "response_time": 4.329784393310547,
+          "tokens_generated": 95
+        }
+      },
+      "overall_ready": true,
+      "issues": []
+    }
+  ],
+  "summary": {
+    "total_models": 4,
+    "passed_connectivity": 4,
+    "passed_basic_generation": 4,
+    "passed_context_sizing": 4,
+    "ready_for_testing": 4
+  },
+  "recommendations": [
+    "\u2705 All models passed validation - proceed with context scaling tests"
+  ]
+}

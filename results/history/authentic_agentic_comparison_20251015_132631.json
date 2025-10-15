@@ -1,0 +1,63 @@
+{
+  "agentic_coding_use_cases": {
+    "production_code_generation": {
+      "recommended_model": "qwen3-coder:30b",
+      "context_window": 131072,
+      "justification": "Superior performance stability, excellent scaling to 256K if needed"
+    },
+    "architectural_analysis": {
+      "recommended_model": "orieg/gemma3-tools:27b-it-qat",
+      "context_window": 131072,
+      "justification": "Peak performance at 128K, specialized for complex analysis tasks"
+    },
+    "rapid_prototyping": {
+      "recommended_model": "qwen3-coder:30b",
+      "context_window": 131072,
+      "justification": "Highest raw performance for iterative development cycles"
+    },
+    "code_review_and_refactoring": {
+      "recommended_model": "orieg/gemma3-tools:27b-it-qat",
+      "context_window": 131072,
+      "justification": "Optimal performance-to-context ratio for detailed analysis"
+    },
+    "large_codebase_navigation": {
+      "recommended_model": "qwen3-coder:30b",
+      "context_window": 262144,
+      "justification": "Maintains strong performance scaling to maximum context"
+    }
+  },
+  "performance_truth": {
+    "qwen3-coder:30b_128k": "~538 tok/s (authentic benchmark)",
+    "qwen3-coder:30b_256k": "~5 tok/s (historical ground truth)",
+    "gemma3-tools-27b_128k": "~9 tok/s (optimal performance zone)",
+    "gemma3-tools-27b_256k": "~9 tok/s (degraded from 128K optimal)"
+  },
+  "key_insights": [
+    "Qwen3-coder-30B shows 100x+ performance delta between optimal 128K and 256K contexts",
+    "Gemma3-tools-27B is context-sensitive - peaks at 128K, degrades at 256K",
+    "For sustained agentic coding, use context windows where models perform optimally",
+    "Performance deltas are not linear - each model has its sweet spot"
+  ],
+  "deployment_recommendations": {
+    "default_config": {
+      "model": "qwen3-coder:30b",
+      "context": "128K (balanced between performance and capacity)",
+      "justification": "Maximum reliability for varied workloads"
+    },
+    "performance_optimized": {
+      "model": "qwen3-coder:30b",
+      "context": "128K (optimal for Qwen3 architecture)",
+      "justification": "Highest raw performance maintained"
+    },
+    "analysis_specialized": {
+      "model": "orieg/gemma3-tools:27b-it-qat",
+      "context": "128K (Gemma sweet spot)",
+      "justification": "Best for complex architectural analysis"
+    },
+    "maximum_context": {
+      "model": "qwen3-coder:30b",
+      "context": "256K (only when capacity absolutely required)",
+      "justification": "Qwen maintains best 256K performance of available models"
+    }
+  }
+}

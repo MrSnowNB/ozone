@@ -56,7 +56,7 @@ class TestResult:
     concurrency_level: int
     run_index: int
 
-from hardware_monitor import HardwareMonitor, RealTimeMonitor, quick_hardware_check
+from .hardware_monitor import HardwareMonitor, RealTimeMonitor, quick_hardware_check
 
 class OllamaOptimizer:
     """Main optimizer class for O3 test suite"""
