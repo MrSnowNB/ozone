@@ -1,6 +1,6 @@
 # O3 (Ozone) - AI-First Ollama Hardware Optimizer ⚡
 
-*AI-First Hardware Optimization: Binary Search + 10x Faster Testing*
+*AI-First Context Optimization: Binary Search + Statistical Validation*
 
 ![O3 Logo](https://img.shields.io/badge/O3-Ozone-blue?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.7+-green?style=for-the-badge)

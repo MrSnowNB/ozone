@@ -27,8 +27,8 @@ ai_guidance:
 search_strategy:
   # Binary search for context discovery (logarithmic vs linear)
   context_discovery: binary_search
-  # Start with middle of high-capacity range for this system
-  initial_context_probe: 65536   # 64k tokens optimized for HP Strix hardware
+  # Agentic coding targeted: 128k context for maximum code analysis capability
+  initial_context_probe: 131072   # 128k tokens - optimal for agentic coding workflows
   # How much to expand/contract on success/failure
   binary_search_factor: 1.3     # Conservative scaling for stability
   # Maximum iterations before declaring max context

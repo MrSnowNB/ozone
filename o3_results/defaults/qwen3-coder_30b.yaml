@@ -3,31 +3,31 @@ model: qwen3-coder:30b
 optimization_type: AI-First Extreme Context
 presets:
   balanced:
-    batch: 32
+    batch: 16
     description: For tool-using agents, code generation, moderate context needs
     f16_kv: true
-    num_ctx: 65536
+    num_ctx: 18432
     num_predict: 512
     num_thread: 16
     performance:
       stability_score: 0.85
-      tokens_per_sec: 10.325001636556161
-      ttft_ms: 5230.023384094238
+      tokens_per_sec: 10.198228042446042
+      ttft_ms: 5295.037508010864
     temperature: 0.2
     top_p: 0.95
     use_case: Typical agentic interactions, moderate tool usage, balanced performance
       needs
   fast_response:
-    batch: 32
+    batch: 16
     description: For quick commands, simple queries, high-frequency interactions
     f16_kv: true
-    num_ctx: 65536
+    num_ctx: 18432
     num_predict: 512
     num_thread: 16
     performance:
       stability_score: 0.85
-      tokens_per_sec: 10.325001636556161
-      ttft_ms: 5230.023384094238
+      tokens_per_sec: 10.198228042446042
+      ttft_ms: 5295.037508010864
     temperature: 0.2
     top_p: 0.95
     use_case: Quick commands, real-time interactions, high-frequency tool calls
@@ -35,14 +35,15 @@ presets:
     batch: 32
     description: For long conversations, document analysis, complex reasoning
     f16_kv: true
-    num_ctx: 81920
+    num_ctx: 131072
     num_predict: 512
     num_thread: 16
     performance:
       stability_score: 0.85
-      tokens_per_sec: 5.684482724868349
-      ttft_ms: 9499.545097351074
+      tokens_per_sec: 5.553072985930444
+      ttft_ms: 9724.345445632935
     temperature: 0.2
     top_p: 0.95
-    use_case: Long-form reasoning, extensive tool traces, complex code generation
-updated_at: '2025-10-14T21:01:37.409009'
+    use_case: Ultra-long conversations, massive document analysis, complex multi-agent
+      workflows
+updated_at: '2025-10-14T21:15:13.143516'
