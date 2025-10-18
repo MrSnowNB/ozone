@@ -1,4 +1,4 @@
-FROM /home/mr-snow/models/Qwen3-Coder-30B-A3B-Instruct-BF16-00001-of-00002.gguf
+FROM codestral:22b
 
 PARAMETER stop "<end_of_turn>"
 PARAMETER stop "<|endoftext|>"
@@ -13,7 +13,7 @@ TEMPLATE """{{ if .System }}<|im_start|>system
 <|im_start|>assistant
 {{ end }}"""
 
-# Advanced coding parameters for Qwen3-Coder - O3 OPTIMIZED FOR 256K CONTEXT
+# Advanced coding parameters for Codestral - O3 OPTIMIZED FOR 256K CONTEXT
 PARAMETER temperature 0.2
 PARAMETER top_p 0.95
 PARAMETER top_k 20

@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "=== O3 Multi-GPU Test Setup for Qwen3-Coder-30B ==="
+echo "=== O3 Multi-GPU Test Setup for Codestral-22B ==="
 echo "Hardware: 4x RTX A6000 (~186GB total VRAM)"
 
 # Kill existing Ollama if running
@@ -16,7 +16,7 @@ ollama serve &
 sleep 5
 
 # Test the large model
-echo "Testing Qwen3-Coder-30B BF16 model with multi-GPU..."
-ollama run qwencoder "Write a hello world script in Python" | head -10
+echo "Testing Codestral-22B model with multi-GPU..."
+ollama run codestral "Write a hello world script in Python" | head -10
 
 echo "Multi-GPU test complete. If successful, run O3 optimization next."
