@@ -1,0 +1,50 @@
+ai_guidance:
+  autonomous_tuning: true
+  focus_mode: "coding_assistance"
+
+search_strategy:
+  initial_context_probe: 16384
+  binary_search_factor: 1.5
+  max_binary_iterations: 5
+  batch_adaptation:
+    initial_batch_large: 8
+    initial_batch_medium: 16
+    initial_batch_small: 32
+    scale_up_factor: 1.5
+    max_batch: 128
+
+preset_categories:
+  max_context:
+    description: "Maximum stable context for agentic workflows"
+    target_context_range: [16384, 131072]
+  balanced:
+    description: "Balanced performance for typical use"
+    target_context_range: [8192, 65536]
+    throughput_weight: 0.6
+    context_efficiency_weight: 0.4
+  fast_response:
+    description: "Optimized for quick tool responses"
+    target_context_range: [4096, 32768]
+    throughput_weight: 0.8
+    ttft_weight: 0.7
+
+model_intelligence:
+  size_categories:
+    large:
+      min_params: 27000000
+      description: "27B+ parameter models like Qwen3-coder, Gemma3-tools"
+      max_batch: 256  # Increased for multi-GPU
+      gpu_layer_strategy: "multi_gpu_spread"
+    medium:
+      min_params: 3000000
+      max_params: 27000000
+      description: "3B-27B parameter models"
+    small:
+      max_params: 3000000
+      description: "Sub-3B parameter models"
+
+safety_thresholds:
+  max_vram_percent: 90
+  max_ram_percent: 85
+  max_temperature_c: 85
+  max_cpu_percent: 90
